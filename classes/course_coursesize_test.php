@@ -20,25 +20,17 @@
  * More indepth description.
  *
  * @package    report_coursediagnositc
- * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
+ * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-use report_coursediagnostic\course_diagnostic_tests;
+class course_coursesize_test implements course_diagnostic_tests
+{
 
-class course_studentenrolment_test implements course_diagnostic_tests {
-
-    /**
-     * @param $course
-     * @return bool
-     */
     public function runTest($course)
     {
-        global $PAGE;
-        $studentyusers = count_role_users(5, $PAGE->context);
-
-        return (bool) $studentyusers;
+        // TODO: Implement runTest() method.
     }
 }

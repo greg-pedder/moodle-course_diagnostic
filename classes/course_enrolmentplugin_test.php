@@ -15,31 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Has the course end date been enabled
+ * Are all enrolment methods enabled.
  *
- * This tests whether the end date has been enabled or not.
+ * This tests whether all enrolment plugins are disabled.
  *
- * @package    report_coursediagnositc
- * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
+ * @package
+ * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-use report_coursediagnostic\course_diagnostic_tests;
-class course_enddate_notset_test implements course_diagnostic_tests {
+class course_enrolmentplugin_test implements course_diagnostic_tests
+{
 
-    /**
-     * @param $course
-     * @return bool
-     */
     public function runTest($course)
     {
-        // The course doesn't have an end date...
-        if ($course->enddate == 0) {
-            return false;
-        }
-
-        return true;
+        // TODO: Implement runTest() method.
     }
 }

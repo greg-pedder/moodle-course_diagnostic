@@ -46,8 +46,9 @@ class diagnostic_factory {
      * @param bool $forcereload If set to true a new diagnostic_factory instance will be created and used.
      * @return diagnostic_factory
      */
-    public static function instance($forcereload = false) {
-        global $CFG;
+    public static function instance(bool $forcereload = false): diagnostic_factory
+    {
+
         if ($forcereload || self::$instance === null) {
             // Initialise a new factory to facilitate our needs.
 

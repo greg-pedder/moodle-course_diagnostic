@@ -88,6 +88,41 @@ class coursediagnostic {
     }
 
     /**
+     * @return array|false
+     */
+    public static function get_diagnosticsettings() {
+
+        global $SESSION;
+
+        if (isset($SESSION->report_coursediagnosticconfig)) {
+            return get_object_vars($SESSION->report_coursediagnosticconfig);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return int
+     */
+    public static function get_settingscount() :int
+    {
+
+        $diagnostic_settings = self::get_diagnosticsettings();
+        $counter = 0;
+        if ($diagnostic_settings) {
+
+            foreach ($diagnostic_settings as $k => $v) {
+                if ($v) {
+                    $counter++;
+                }
+            }
+        }
+
+        return $counter;
+
+    }
+
+    /**
      * @return mixed
      */
     public static function init_cache(): mixed
@@ -130,48 +165,48 @@ class coursediagnostic {
      */
     public static function prepare_tests(): array
     {
-        global $SESSION;
+        $diagnostic_setting = (object) self::get_diagnosticsettings();
         $testsuite = [];
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'startdate') && $SESSION->report_coursediagnosticconfig->startdate) {
+        if (property_exists($diagnostic_setting, 'startdate') && $diagnostic_setting->startdate) {
             $testsuite[] = 'startdate';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'enddate') && $SESSION->report_coursediagnosticconfig->enddate) {
+        if (property_exists($diagnostic_setting, 'enddate') && $diagnostic_setting->enddate) {
             $testsuite[] = 'enddate_notset';
             $testsuite[] = 'enddate';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'visibility') && $SESSION->report_coursediagnosticconfig->visibility) {
+        if (property_exists($diagnostic_setting, 'visibility') && $diagnostic_setting->visibility) {
             $testsuite[] = 'visibility';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'studentenrolment') && $SESSION->report_coursediagnosticconfig->studentenrolment) {
+        if (property_exists($diagnostic_setting, 'studentenrolment') && $diagnostic_setting->studentenrolment) {
             $testsuite[] = 'studentenrolment';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'inactiveenrolment') && $SESSION->report_coursediagnosticconfig->inactiveenrolment) {
+        if (property_exists($diagnostic_setting, 'inactiveenrolment') && $diagnostic_setting->inactiveenrolment) {
             $testsuite[] = 'inactiveenrolment';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'groupmodeenabled') && $SESSION->report_coursediagnosticconfig->groupmodeenabled) {
+        if (property_exists($diagnostic_setting, 'groupmodeenabled') && $diagnostic_setting->groupmodeenabled) {
             $testsuite[] = 'groupmodeenabled_notset';
             $testsuite[] = 'groupmodeenabled';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'submissiontypes') && $SESSION->report_coursediagnosticconfig->submissiontypes) {
+        if (property_exists($diagnostic_setting, 'submissiontypes') && $diagnostic_setting->submissiontypes) {
             $testsuite[] = 'submissiontypes';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'coursesize') && $SESSION->report_coursediagnosticconfig->coursesize) {
+        if (property_exists($diagnostic_setting, 'coursesize') && $diagnostic_setting->coursesize) {
             $testsuite[] = 'coursesize';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'existingenrolments') && $SESSION->report_coursediagnosticconfig->existingenrolments) {
+        if (property_exists($diagnostic_setting, 'existingenrolments') && $diagnostic_setting->existingenrolments) {
             $testsuite[] = 'existingenrolments';
         }
 
-        if (property_exists($SESSION->report_coursediagnosticconfig, 'enrolmentpluginsenabled') && $SESSION->report_coursediagnosticconfig->enrolmentpluginsenabled) {
+        if (property_exists($diagnostic_setting, 'enrolmentpluginsenabled') && $diagnostic_setting->enrolmentpluginsenabled) {
             $testsuite[] = 'enrolmentpluginsenabled';
         }
 

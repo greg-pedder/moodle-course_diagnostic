@@ -36,6 +36,9 @@ class observer {
 
     /**
      * Handle the course viewed event.
+     *
+     * @param \core\event\course_viewed $event
+     * @return bool
      */
     public static function course_viewed(\core\event\course_viewed $event) {
 
@@ -96,6 +99,9 @@ class observer {
     }
 
     /**
+     * Handle the course updated event.
+     * This handles both course updated and course deleted events.
+     *
      * @param \core\event\course_updated $event
      * @return bool
      */
@@ -120,5 +126,74 @@ class observer {
         }
 
         return false;
+    }
+
+    /**
+     * When the first student is added to a course, handle the session vars.
+     * The config session variable needs to be removed in order to be re-gen'd.
+     *
+     * @param \core\event\user_enrolment_created $event
+     * @return bool
+     */
+    public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
+
+        global $PAGE;
+        $studentyusers = count_role_users(5, $PAGE->context);
+
+        if (!empty($event->relateduserid) && $studentyusers == 0) {
+            $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
+            $cachekey = self::CACHE_KEY . $event->courseid;
+            $courseid = $cache->get_many([$cachekey]);
+
+            if ($courseid[$cachekey] != false) {
+                $cache->delete($cachekey);
+
+                global $SESSION;
+                unset($SESSION->report_coursediagnostic);
+                unset($SESSION->report_coursediagnosticconfig);
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * When the last student is removed from a course, handle the session vars.
+     * The config session variable needs to be removed in order to be re-gen'd.
+     *
+     * @param \core\event\user_enrolment_deleted $event
+     * @return bool
+     */
+    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event) {
+
+        global $PAGE;
+        $studentyusers = count_role_users(5, $PAGE->context);
+
+        if (!empty($event->relateduserid) && $studentyusers == 0) {
+            $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
+            $cachekey = self::CACHE_KEY . $event->courseid;
+            $courseid = $cache->get_many([$cachekey]);
+
+            if ($courseid[$cachekey] != false) {
+                $cache->delete($cachekey);
+
+                global $SESSION;
+                unset($SESSION->report_coursediagnostic);
+                unset($SESSION->report_coursediagnosticconfig);
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public static function reset_cache_after_enrolment_update()
+    {
+
     }
 }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Has the course end date been enabled
+ * Are there students enrolled on this course.
  *
- * This tests whether the end date has been enabled or not.
+ * This tests whether a course has students enrolled onto it or not.
  *
  * @package    report_coursediagnositc
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -27,7 +27,8 @@
 namespace report_coursediagnostic;
 
 use report_coursediagnostic\course_diagnostic_tests;
-class course_enddate_notset_test implements course_diagnostic_tests {
+
+class course_studentenrolment_test implements course_diagnostic_tests {
 
     /**
      * @param $course
@@ -35,11 +36,9 @@ class course_enddate_notset_test implements course_diagnostic_tests {
      */
     public function runTest($course)
     {
-        // The course doesn't have an end date...
-        if ($course->enddate == 0) {
-            return false;
-        }
+        global $PAGE;
+        $studentyusers = count_role_users(5, $PAGE->context);
 
-        return true;
+        return (bool) $studentyusers;
     }
 }

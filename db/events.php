@@ -39,4 +39,12 @@ $observers = [
         'eventname' => '\core\event\course_deleted',
         'callback' => 'report_coursediagnostic\observer::course_updated'
     ],
+    [
+        'eventname' => '\core\event\user_enrolment_created',
+        'callback' => 'report_coursediagnostic\observer::user_enrolment_created'
+    ],
+    [
+        'eventname' => '\core\event\user_enrolment_deleted',
+        'callback' => 'report_coursediagnostic\observer::user_enrolment_deleted'
+    ]
 ];

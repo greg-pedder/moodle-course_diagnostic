@@ -15,9 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
- *
- * More indepth description.
+ * Course diagnostic settings
  *
  * @package    report_coursediagnositc
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -26,7 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Ensure the configurations for this site are set.
 if ($hassiteconfig) {
     $pluginname = get_string('pluginsettingsname', 'report_coursediagnostic');
 
@@ -75,19 +72,20 @@ if ($hassiteconfig) {
         $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/coursesize', get_string('coursesize', 'report_coursediagnostic'),
             get_string('coursesize_desc', 'report_coursediagnostic'), 0));
 
+        // Enrolment plugin tests
+        $settingspage->add(new admin_setting_heading('enrolmentpluginshdr', new lang_string('enrolmentplugins', 'report_coursediagnostic'), ''));
+
+        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/enrolmentpluginsenabled', get_string('enrolmentpluginsenabled', 'report_coursediagnostic'),
+            get_string('enrolmentplugins_desc', 'report_coursediagnostic'), 0));
+
+        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing', get_string('selfenrolmentkeymissing', 'report_coursediagnostic'),
+            get_string('selfenrolmentkeymissing_desc', 'report_coursediagnostic'), 0));
+
         // Auto enrolment tests
         $settingspage->add(new admin_setting_heading('autoenrolmenthdr', new lang_string('autoenrolment', 'report_coursediagnostic'), ''));
 
         $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/existingenrolments', get_string('existingenrolments', 'report_coursediagnostic'),
             get_string('existingenrolments_desc', 'report_coursediagnostic'), 0));
-
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/existingenrolments', get_string('existingenrolments', 'report_coursediagnostic'),
-            get_string('existingenrolments_desc', 'report_coursediagnostic'), 0));
-
-        $settingspage->add(new admin_setting_heading('enrolmentpluginshdr', new lang_string('enrolmentplugins', 'report_coursediagnostic'), ''));
-
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/enrolmentpluginsenabled', get_string('enrolmentpluginsenabled', 'report_coursediagnostic'),
-            get_string('enrolmentplugins_desc', 'report_coursediagnostic'), 0));
 
         // Activity completion tests
         $settingspage->add(new admin_setting_heading('activitycompletionhdr', new lang_string('activitycompletion', 'report_coursediagnostic'), ''));
