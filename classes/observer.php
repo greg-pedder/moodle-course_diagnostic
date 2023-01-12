@@ -77,7 +77,7 @@ class observer {
 //                    }
 
                     $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
-                    $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results();
+                    $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
                     \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $event->courseid);
 
                 }
@@ -100,29 +100,33 @@ class observer {
 
     /**
      * Handle the course updated event.
-     * This handles both course updated and course deleted events.
      *
      * @param \core\event\course_updated $event
      * @return bool
      */
-    public static function course_updated(\core\event\course_updated $event) {
+    public static function course_updated(\core\event\course_updated $event): bool
+    {
 
         // Invalidate the cache for the given course id - if it exists...
         if ((!empty($event->courseid)) && $event->courseid != 1) {
-            $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
-            $cachekey = self::CACHE_KEY . $event->courseid;
-            $courseid = $cache->get_many([$cachekey]);
+            return self::delete_key_from_cache($event->courseid);
+        }
 
-            if ($courseid[$cachekey] != false) {
-                $cache->delete($cachekey);
+        return false;
+    }
 
-                global $SESSION;
-                unset($SESSION->report_coursediagnostic);
-                unset($SESSION->report_coursediagnosticconfig);
-                return true;
-            }
+    /**
+     * Handle the course deleted event.
+     *
+     * @param \core\event\course_deleted $event
+     * @return bool
+     */
+    public static function course_deleted(\core\event\course_deleted $event): bool
+    {
 
-            return false;
+        // Invalidate the cache for the given course id - if it exists...
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
         }
 
         return false;
@@ -135,26 +139,14 @@ class observer {
      * @param \core\event\user_enrolment_created $event
      * @return bool
      */
-    public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
+    public static function user_enrolment_created(\core\event\user_enrolment_created $event): bool
+    {
 
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
 
         if (!empty($event->relateduserid) && $studentyusers == 0) {
-            $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
-            $cachekey = self::CACHE_KEY . $event->courseid;
-            $courseid = $cache->get_many([$cachekey]);
-
-            if ($courseid[$cachekey] != false) {
-                $cache->delete($cachekey);
-
-                global $SESSION;
-                unset($SESSION->report_coursediagnostic);
-                unset($SESSION->report_coursediagnosticconfig);
-                return true;
-            }
-
-            return false;
+            return self::delete_key_from_cache($event->courseid);
         }
 
         return false;
@@ -167,33 +159,39 @@ class observer {
      * @param \core\event\user_enrolment_deleted $event
      * @return bool
      */
-    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event) {
+    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event): bool
+    {
 
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
 
         if (!empty($event->relateduserid) && $studentyusers == 0) {
-            $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
-            $cachekey = self::CACHE_KEY . $event->courseid;
-            $courseid = $cache->get_many([$cachekey]);
-
-            if ($courseid[$cachekey] != false) {
-                $cache->delete($cachekey);
-
-                global $SESSION;
-                unset($SESSION->report_coursediagnostic);
-                unset($SESSION->report_coursediagnosticconfig);
-                return true;
-            }
-
-            return false;
+            return self::delete_key_from_cache($event->courseid);
         }
 
         return false;
     }
 
-    public static function reset_cache_after_enrolment_update()
+    /**
+     * Utility method to save breaking DRY rules.
+     * @param $courseid
+     * @return bool
+     */
+    public static function delete_key_from_cache($courseid): bool
     {
+        $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
+        $cachekey = self::CACHE_KEY . $courseid;
+        $cachedata = $cache->get_many([$cachekey]);
 
+        if ($cachedata[$cachekey] != false) {
+            $cache->delete($cachekey);
+
+            global $SESSION;
+            unset($SESSION->report_coursediagnostic);
+            unset($SESSION->report_coursediagnosticconfig);
+            return true;
+        }
+
+        return false;
     }
 }

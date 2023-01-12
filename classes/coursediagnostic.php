@@ -152,9 +152,11 @@ class coursediagnostic {
         $cache_key = self::CACHE_KEY . $courseid;
         $cache_data = [
             $cache_key => [
-                $diagnostic_data
+                $diagnostic_data[$courseid]
             ]
         ];
+
+        // @todo - should we clear self::$diagnostic_data[$courseid] now?
 
         // Cache this data set...
         return self::$cache->set_many($cache_data);
@@ -245,21 +247,22 @@ class coursediagnostic {
             }
 
             // Assign the test result
-            self::$diagnostic_data[$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
+            self::$diagnostic_data[$courseid][$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
         }
 
         return self::$diagnostic_data;
     }
 
     /**
+     * @param $courseid
      * @return float
      */
-    public static function fetch_test_results(): float
+    public static function fetch_test_results($courseid): float
     {
         // If any of our tests have failed - have our 'alert' banner (the link to the report) display
         // Based on a % of the number of tests that have failed, display the appropriate severity banner/button
-        $total_tests = count(self::$diagnostic_data);
-        $passed = array_sum(self::$diagnostic_data);
+        $total_tests = count(self::$diagnostic_data[$courseid]);
+        $passed = array_sum(self::$diagnostic_data[$courseid]);
         $failed = ($total_tests - $passed);
         return round($failed/$total_tests * 100);
     }
