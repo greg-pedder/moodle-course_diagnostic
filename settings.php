@@ -31,67 +31,170 @@ if ($hassiteconfig) {
     $settingspage = new admin_settingpage('coursediagnosticsettings', $pluginname);
 
     if ($ADMIN->fulltree) {
-        // This gets set when the course_viewed event is caught.
-        // @todo: figure out how to handle the POST of this form and unset the
-        // @todo session variables there instead...
-        global $SESSION;
-        unset($SESSION->report_coursediagnostic);
-        unset($SESSION->report_coursediagnosticconfig);
 
-        $settingspage->add(new admin_setting_configcheckbox(
-            'report_coursediagnostic/enablediagnostic',
-            new lang_string('enablediagnostic', 'report_coursediagnostic'),
-            new lang_string('enablediagnostic_desc', 'report_coursediagnostic'),
-            0,
-        ));
+        $name = new lang_string('enablediagnostic', 'report_coursediagnostic');
+        $desc = new lang_string('enablediagnostic_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/enablediagnostic',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
         // Course settings tests
-        $settingspage->add(new admin_setting_heading('coursediagnostichdr', new lang_string('testsuite', 'report_coursediagnostic'), ''));
+        $name = new lang_string('testsuite', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('coursediagnostichdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/startdate', get_string('startdate', 'report_coursediagnostic'),
-            get_string('startdate_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('startdate', 'report_coursediagnostic');
+        $desc = new lang_string('startdate_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/startdate',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/enddate', get_string('enddate', 'report_coursediagnostic'),
-            get_string('enddate_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('enddate', 'report_coursediagnostic');
+        $desc = new lang_string('enddate_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/enddate',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/visibility', get_string('visibility', 'report_coursediagnostic'),
-            get_string('visibility_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('visibility', 'report_coursediagnostic');
+        $desc = new lang_string('visibility_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/visibility',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/studentenrolment', get_string('studentenrolment', 'report_coursediagnostic'),
-            get_string('studentenrolment_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('studentenrolment', 'report_coursediagnostic');
+        $desc = new lang_string('studentenrolment_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/studentenrolment',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/inactiveenrolment', get_string('inactiveenrolment', 'report_coursediagnostic'),
-            get_string('inactiveenrolment_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('inactiveenrolment', 'report_coursediagnostic');
+        $desc = new lang_string('inactiveenrolment_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/inactiveenrolment',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/groupmodeenabled', get_string('groupmodeenabled', 'report_coursediagnostic'),
-            get_string('groupmodeenabled_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('groupmodeenabled', 'report_coursediagnostic');
+        $desc = new lang_string('groupmodeenabled_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/groupmodeenabled',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/submissiontypes', get_string('submissiontypes', 'report_coursediagnostic'),
-            get_string('submissiontypes_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('submissiontypes', 'report_coursediagnostic');
+        $desc = new lang_string('submissiontypes_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/submissiontypes',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/coursesize', get_string('coursesize', 'report_coursediagnostic'),
-            get_string('coursesize_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('coursesize', 'report_coursediagnostic');
+        $desc = new lang_string('coursesize_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/coursesize',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
         // Enrolment plugin tests
-        $settingspage->add(new admin_setting_heading('enrolmentpluginshdr', new lang_string('enrolmentplugins', 'report_coursediagnostic'), ''));
+        $name = new lang_string('enrolmentplugins', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('enrolmentpluginshdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/enrolmentpluginsenabled', get_string('enrolmentpluginsenabled', 'report_coursediagnostic'),
-            get_string('enrolmentplugins_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('enrolmentpluginsenabled', 'report_coursediagnostic');
+        $desc = new lang_string('enrolmentplugins_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/enrolmentpluginsenabled',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing', get_string('selfenrolmentkeymissing', 'report_coursediagnostic'),
-            get_string('selfenrolmentkeymissing_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('selfenrolmentkeymissing', 'report_coursediagnostic');
+        $desc = new lang_string('selfenrolmentkeymissing_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
         // Auto enrolment tests
-        $settingspage->add(new admin_setting_heading('autoenrolmenthdr', new lang_string('autoenrolment', 'report_coursediagnostic'), ''));
+        $name = new lang_string('autoenrolment', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('autoenrolmenthdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
 
-        $settingspage->add(new admin_setting_configcheckbox('report_coursediagnostic/existingenrolments', get_string('existingenrolments', 'report_coursediagnostic'),
-            get_string('existingenrolments_desc', 'report_coursediagnostic'), 0));
+        $name = new lang_string('existingenrolments', 'report_coursediagnostic');
+        $desc = new lang_string('existingenrolments_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
 
         // Activity completion tests
-        $settingspage->add(new admin_setting_heading('activitycompletionhdr', new lang_string('activitycompletion', 'report_coursediagnostic'), ''));
+        $name = new lang_string('activitycompletion', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('activitycompletionhdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
 
         // GCAT - this will be specific to UofG so we need to make these kind of 'options' dynamically loaded.
-        $settingspage->add(new admin_setting_heading('gcathdr', new lang_string('gcat', 'report_coursediagnostic'), ''));
+        $name = new lang_string('gcat', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('gcathdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
+
+        if (\report_coursediagnostic\coursediagnostic::get_cache_deletion_flag()) {
+            \report_coursediagnostic\coursediagnostic::purge_diagnostic_settings_cache();
+        }
     }
 
     $ADMIN->add('courses', $settingspage);

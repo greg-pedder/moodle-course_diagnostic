@@ -92,6 +92,7 @@ if ($cfg_settings) {
             ];
             $table->head = $tableheadings;
             $table->data = [];
+            $automaticEnrolmentsDisabled = false;
 
             foreach ($SESSION->report_coursediagnosticconfig as $configkey => $configvalue) {
 
@@ -126,7 +127,6 @@ if ($cfg_settings) {
                     if (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey]) {
                         $cell2->text = '';
                         $cell3->text = "<span class='badge badge-success'>" . get_string('passtext', 'report_coursediagnostic') . "</span>";
-
                     }
 
                 }

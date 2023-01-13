@@ -30,6 +30,18 @@ use report_coursediagnostic\course_diagnostic_tests;
 
 class course_studentenrolment_test implements course_diagnostic_tests {
 
+    /** @var string The name of the test - needed w/in the report */
+    public string $testname;
+
+    /** @var bool $testresult whether the test has passed or failed. */
+    public bool $testresult;
+
+    /**
+     * @param $name
+     */
+    public function __construct($name) {
+        $this->testname = $name;
+    }
     /**
      * @param $course
      * @return bool
@@ -39,6 +51,7 @@ class course_studentenrolment_test implements course_diagnostic_tests {
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
 
-        return (bool) $studentyusers;
+        $this->testresult = (bool) $studentyusers;
+        return $this->testresult;
     }
 }

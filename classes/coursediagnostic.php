@@ -56,7 +56,15 @@ class coursediagnostic {
         ]
     ];
 
+    /**
+     * @var array Contains the results of all selected tests, ready for caching
+     */
     protected static array $diagnostic_data = [];
+
+    /**
+     * @var bool Needed for when the settings page is submitted.
+     */
+    protected static bool $purgeFlag = false;
 
     /**
      * @return bool
@@ -160,6 +168,46 @@ class coursediagnostic {
 
         // Cache this data set...
         return self::$cache->set_many($cache_data);
+    }
+
+    /**
+     * Called from w/in the settings page, when a change is made.
+     * @return void
+     */
+    public static function flag_cache_for_deletion() {
+        self::$purgeFlag = true;
+    }
+
+    public static function get_cache_deletion_flag() {
+        return self::$purgeFlag;
+    }
+
+    /**
+     * Clears the entire coursediagnosticdata cache.
+     * Keep in mind that with our cronjob running and populating the cache,
+     * this function destroys what could potentially be a lot of data.
+     *
+     * Only ^ever^ carried out when System Admin->Courses->Course diagnostic
+     * Settings page is updated.
+     * @return void
+     */
+    public static function purge_diagnostic_settings_cache() {
+
+        // Safeguard....
+        if (self::$purgeFlag) {
+
+            // This gets set when the course_viewed event is caught.
+            // Have it regenerate after any changes have been made.
+            global $SESSION;
+            unset($SESSION->report_coursediagnostic);
+            unset($SESSION->report_coursediagnosticconfig);
+
+            self::$cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
+            self::$cache->purge();
+
+            // reset this now that the cache has been cleared.
+            self::$purgeFlag = false;
+        }
     }
 
     /**

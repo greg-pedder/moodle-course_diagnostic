@@ -30,12 +30,26 @@ use report_coursediagnostic\course_diagnostic_tests;
 
 class course_visibility_test implements course_diagnostic_tests {
 
+
+    /** @var string The name of the test - needed w/in the report */
+    public string $testname;
+
+    /** @var bool $testresult whether the test has passed or failed. */
+    public bool $testresult;
+
+    /**
+     * @param $name
+     */
+    public function __construct($name) {
+        $this->testname = $name;
+    }
     /**
      * @param $course
      * @return bool
      */
-    public function runTest($course)
+    public function runTest($course): bool
     {
-        return (bool) $course->visible;
+        $this->testresult = (bool) $course->visible;
+        return $this->testresult;
     }
 }

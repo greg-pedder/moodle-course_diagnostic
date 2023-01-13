@@ -71,10 +71,9 @@ class diagnostic_factory {
 
         $fqclassname = '\\report_coursediagnostic\\course_' . $name . '_test';
 
-        $testclass = new $fqclassname($course);
-        $testclass->testname = $name;
+        $testclass = new $fqclassname($name);
 
-        $testclass->testresult = $testclass->runTest($course);
+        $testclass->runTest($course);
 
         return $testclass;
     }
