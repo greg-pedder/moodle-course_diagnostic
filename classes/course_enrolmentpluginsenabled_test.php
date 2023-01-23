@@ -15,38 +15,52 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Are all enrolment methods enabled.
+ * Are all of the courses enrolment methods enabled.
  *
- * This tests whether all enrolment plugins are disabled.
+ * This tests whether all enrolment plugins for this course are disabled.
  *
- * @package
+ * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-class course_enrolmentplugin_test implements course_diagnostic_tests
+class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
+
+    /** @var object The course object */
+    public object $course;
 
     /** @var bool $testresult whether the test has passed or failed. */
     public bool $testresult;
 
     /**
      * @param $name
-     */
-    public function __construct($name) {
-        $this->testname = $name;
-    }
-    /**
      * @param $course
+     */
+    public function __construct($name, $course) {
+        $this->testname = $name;
+        $this->course = $course;
+    }
+
+    /**
+     * Return true or false, the number of enrolment instances we have.
+     * Convert the number to a bool - >= 1 true, 0, false.
      * @return bool
      */
-    public function runTest($course)
+    public function runTest(): bool
     {
-        // TODO: Implement runTest() method.
+        global $PAGE;
+
+        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
+        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+
+        $this->testresult = (bool) count($enrolment_plugins);
+
+        return $this->testresult;
     }
 }

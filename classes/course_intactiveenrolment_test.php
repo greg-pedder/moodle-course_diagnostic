@@ -17,7 +17,8 @@
 /**
  * Are there inactive users enrolled on this course.
  *
- * This tests whether a there are enrolled but inactive students in the course.
+ * This test checks for users that have been inactive on a course.
+ * Initially, we determine this if the last login was greater than 1 year.
  *
  * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -26,29 +27,39 @@
 
 namespace report_coursediagnostic;
 
-use report_coursediagnostic\course_diagnostic_tests;
-
-class course_intactiveenrolment_test implements course_diagnostic_tests
+class course_intactiveenrolment_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
+
+    /** @var object The course object */
+    public object $course;
 
     /** @var bool $testresult whether the test has passed or failed. */
     public bool $testresult;
 
     /**
      * @param $name
-     */
-    public function __construct($name) {
-        $this->testname = $name;
-    }
-    /**
      * @param $course
+     */
+    public function __construct($name, $course) {
+        $this->testname = $name;
+        $this->course = $course;
+    }
+
+    /**
      * @return bool
      */
-    public function runTest($course)
+    public function runTest()
     {
-        // TODO: Implement runTest() method.
+        global $PAGE;
+
+        $manager = new \course_enrolment_manager($PAGE, $this->course, null, 0, '', 0, ENROL_USER_ACTIVE);
+        $users = $manager->get_users('id');
+
+        $this->testresult = count($users);
+
+        return (bool) $this->testresult;
     }
 }

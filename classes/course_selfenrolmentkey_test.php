@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Does the course have an end date.
+ * For the Self enrolment method, has a key been set or not.
  *
- * This tests whether the course end date has passed.
+ * This tests whether a key has been set for the self-enrolment method.
  *
  * @package    report_coursediagnositc
- * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
+ * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-class course_enddate_test implements course_diagnostic_interface {
+class course_selfenrolmentkey_test implements course_diagnostic_interface
+{
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,13 +52,28 @@ class course_enddate_test implements course_diagnostic_interface {
      */
     public function runTest()
     {
-        // The course end date is in the past...
-        if (!empty($this->course->enddate)) {
+        global $PAGE;
 
-            $this->testresult = ($this->course->enddate) < time();
-            return $this->testresult;
+        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
+        // We only return the enabled methods to save iterating through a large
+        // list of methods.As we should have passed the previous test, checking
+        // if we're using self-enrolment, then this should run fairly quickly.
+        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+
+        $selfEnrolmentKeyIsSet = true;
+        foreach($enrolment_plugins as $enrolmentInstance) {
+            switch($enrolmentInstance->enrol) {
+                case 'self':
+                    if ($enrolmentInstance->status==0) {
+                        if(empty($enrolmentInstance->password)) {
+                            $selfEnrolmentKeyIsSet = false;
+                        }
+                    }
+                    break;
+            }
         }
 
-        return false;
+        $this->testresult = $selfEnrolmentKeyIsSet;
+        return $this->testresult;
     }
 }

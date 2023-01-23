@@ -148,10 +148,10 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        $name = new lang_string('selfenrolmentkeymissing', 'report_coursediagnostic');
-        $desc = new lang_string('selfenrolmentkeymissing_desc', 'report_coursediagnostic');
+        $name = new lang_string('selfenrolmentkey', 'report_coursediagnostic');
+        $desc = new lang_string('selfenrolmentkey_desc', 'report_coursediagnostic');
         $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing',
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkey',
             $name,
             $desc,
             $default);
@@ -164,16 +164,6 @@ if ($hassiteconfig) {
         $setting = new admin_setting_heading('autoenrolmenthdr',
             $name,
             $desc);
-        $settingspage->add($setting);
-
-        $name = new lang_string('existingenrolments', 'report_coursediagnostic');
-        $desc = new lang_string('existingenrolments_desc', 'report_coursediagnostic');
-        $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/selfenrolmentkeymissing',
-            $name,
-            $desc,
-            $default);
-        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
         // Activity completion tests

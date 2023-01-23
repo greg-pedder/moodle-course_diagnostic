@@ -15,18 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Does the course have an end date.
+ * Is this course using the Self-enrolment method
  *
- * This tests whether the course end date has passed.
+ * This tests whether self-enrolment has been enabled or not.
+ * If it hasn't, we can safely ignore the follow on test.
  *
  * @package    report_coursediagnositc
- * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
+ * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-class course_enddate_test implements course_diagnostic_interface {
+class course_selfenrolmentkey_notset_test implements course_diagnostic_interface
+{
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,13 +53,24 @@ class course_enddate_test implements course_diagnostic_interface {
      */
     public function runTest()
     {
-        // The course end date is in the past...
-        if (!empty($this->course->enddate)) {
 
-            $this->testresult = ($this->course->enddate) < time();
-            return $this->testresult;
+        global $PAGE;
+
+        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
+        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+
+        $usesSelfEnrolment = false;
+        foreach($enrolment_plugins as $enrolmentInstance) {
+            switch($enrolmentInstance->enrol) {
+                case 'self':
+                    if ($enrolmentInstance->status==0) {
+                        $usesSelfEnrolment = true;
+                    }
+                    break;
+            }
         }
 
-        return false;
+        $this->testresult = $usesSelfEnrolment;
+        return $this->testresult;
     }
 }

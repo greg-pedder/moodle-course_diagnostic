@@ -28,7 +28,10 @@ namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die();
 
-interface course_diagnostic_tests
+interface course_diagnostic_interface
 {
-    public function runTest($course);
+    /**
+     * @return bool
+     */
+    public function runTest();
 }

@@ -26,7 +26,7 @@
 
 namespace report_coursediagnostic;
 
-class course_coursesize_test implements course_diagnostic_tests
+class course_coursesize_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
@@ -42,10 +42,9 @@ class course_coursesize_test implements course_diagnostic_tests
         $this->testname = $name;
     }
     /**
-     * @param $course
      * @return bool
      */
-    public function runTest($course)
+    public function runTest()
     {
         // TODO: Implement runTest() method.
     }

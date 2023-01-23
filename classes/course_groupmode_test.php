@@ -26,11 +26,14 @@
 
 namespace report_coursediagnostic;
 
-class course_groupmode_test implements course_diagnostic_tests
+class course_groupmode_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
+
+    /** @var object The course object */
+    public object $course;
 
     /** @var bool $testresult whether the test has passed or failed. */
     public bool $testresult;
@@ -38,14 +41,15 @@ class course_groupmode_test implements course_diagnostic_tests
     /**
      * @param $name
      */
-    public function __construct($name) {
+    public function __construct($name, $course) {
         $this->testname = $name;
+        $this->course = $course;
     }
+
     /**
-     * @param $course
      * @return bool
      */
-    public function runTest($course)
+    public function runTest()
     {
         // TODO: Implement runTest() method.
     }

@@ -28,6 +28,10 @@
 
 namespace report_coursediagnostic;
 
+use core\event\enrol_instance_created;
+use core\event\enrol_instance_deleted;
+use core\event\enrol_instance_updated;
+
 defined('MOODLE_INTERNAL') || die();
 
 class observer {
@@ -173,7 +177,58 @@ class observer {
     }
 
     /**
-     * Utility method to save breaking DRY rules.
+     * When a new enrolment method is added, we need to cater for it here.
+     * The config session variable needs to be removed in order to be re-gen'd.
+     *
+     * @param enrol_instance_created $event
+     * @return bool
+     */
+    public static function enrol_instance_created(\core\event\enrol_instance_created $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * When a new enrolment method is updated, we need to cater for it here.
+     * The config session variable needs to be removed in order to be re-gen'd.
+     *
+     * @param enrol_instance_updated $event
+     * @return bool
+     */
+    public static function enrol_instance_updated(\core\event\enrol_instance_updated $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * When a new enrolment method is deleted, we need to cater for it here.
+     * The config session variable needs to be removed in order to be re-gen'd.
+     *
+     * @param enrol_instance_deleted $event
+     * @return bool
+     */
+    public static function enrol_instance_deleted(\core\event\enrol_instance_deleted $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * Utility method to save violating DRY rules.
      * @param $courseid
      * @return bool
      */

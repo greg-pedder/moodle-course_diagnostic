@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
+ * Class for Course Diagnostic
  *
- * More indepth description.
+ * Provides the functionality for running course diagnostics. This was
+ * previously handled by procedural code embedded w/in the course page.
  *
- * @package
+ * @package    report_coursediagnositc
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -258,6 +259,11 @@ class coursediagnostic {
 
         if (property_exists($diagnostic_setting, 'enrolmentpluginsenabled') && $diagnostic_setting->enrolmentpluginsenabled) {
             $testsuite[] = 'enrolmentpluginsenabled';
+        }
+
+        if (property_exists($diagnostic_setting, 'selfenrolmentkey') && $diagnostic_setting->selfenrolmentkey) {
+            $testsuite[] = 'selfenrolmentkey_notset';
+            $testsuite[] = 'selfenrolmentkey';
         }
 
         return $testsuite;

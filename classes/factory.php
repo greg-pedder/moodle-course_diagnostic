@@ -59,8 +59,8 @@ class diagnostic_factory {
     }
 
     /**
-     * @param $name
-     * @param $course
+     * @param $name - the test being performed
+     * @param $course - the course object
      * @return mixed
      */
     public function create_diagnostic_test_from_config($name, $course) {
@@ -71,9 +71,9 @@ class diagnostic_factory {
 
         $fqclassname = '\\report_coursediagnostic\\course_' . $name . '_test';
 
-        $testclass = new $fqclassname($name);
+        $testclass = new $fqclassname($name, $course);
 
-        $testclass->runTest($course);
+        $testclass->runTest();
 
         return $testclass;
     }
