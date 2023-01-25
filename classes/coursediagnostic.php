@@ -240,9 +240,8 @@ class coursediagnostic {
             $testsuite[] = 'inactiveenrolment';
         }
 
-        if (property_exists($diagnostic_setting, 'groupmodeenabled') && $diagnostic_setting->groupmodeenabled) {
-            $testsuite[] = 'groupmodeenabled_notset';
-            $testsuite[] = 'groupmodeenabled';
+        if (property_exists($diagnostic_setting, 'groupmode') && $diagnostic_setting->groupmode) {
+            $testsuite[] = 'groupmode';
         }
 
         if (property_exists($diagnostic_setting, 'submissiontypes') && $diagnostic_setting->submissiontypes) {

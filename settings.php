@@ -100,10 +100,10 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        $name = new lang_string('groupmodeenabled', 'report_coursediagnostic');
-        $desc = new lang_string('groupmodeenabled_desc', 'report_coursediagnostic');
+        $name = new lang_string('groupmode', 'report_coursediagnostic');
+        $desc = new lang_string('groupmode_desc', 'report_coursediagnostic');
         $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/groupmodeenabled',
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/groupmode',
             $name,
             $desc,
             $default);
