@@ -51,7 +51,7 @@ class course_startdate_test implements course_diagnostic_interface {
      */
     public function runTest()
     {
-        $this->testresult = ($this->course->startdate > time());
+        $this->testresult = !($this->course->startdate > time());
         return $this->testresult;
     }
 }

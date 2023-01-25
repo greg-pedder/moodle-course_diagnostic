@@ -158,12 +158,43 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        // Auto enrolment tests
+        // Auto enrolment tests - applies only to UofG currently.
+        // @todo - find a way to allow these tests to be loaded in separately.
         $name = new lang_string('autoenrolment', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('autoenrolmenthdr',
             $name,
             $desc);
+        $settingspage->add($setting);
+
+        $name = new lang_string('autoenrolment_action_after_period', 'report_coursediagnostic');
+        $desc = new lang_string('autoenrolment_action_after_period_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_action_after_period',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('autoenrolment_enable_user_unenrol', 'report_coursediagnostic');
+        $desc = new lang_string('autoenrolment_enable_user_unenrol_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_enable_user_unenrol',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('autoenrolment_remove_student_from_groups', 'report_coursediagnostic');
+        $desc = new lang_string('autoenrolment_remove_student_from_groups_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_remove_student_from_groups',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
         // Activity completion tests

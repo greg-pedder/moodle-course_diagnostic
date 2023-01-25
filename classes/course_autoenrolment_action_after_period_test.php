@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Does the course have an end date.
+ * Brief Description
  *
- * This tests whether the course end date has passed.
+ * More indepth description.
  *
- * @package    report_coursediagnositc
- * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
+ * @package
+ * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
 
-class course_enddate_test implements course_diagnostic_interface {
+class course_autoenrolment_action_after_period_test implements course_diagnostic_interface
+{
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,12 +52,29 @@ class course_enddate_test implements course_diagnostic_interface {
      */
     public function runTest()
     {
-        $this->testresult = false;
-        // The course end date is in the past...
-        if (!empty($this->course->enddate)) {
-            $this->testresult = !(($this->course->enddate) < time());
+        global $PAGE;
+
+        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
+        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+
+        // We're doing the opposite of what's expected with this next variable.
+        // We want it to return false (and therefore fail) if we find that
+        // the Action after period drop down is set to Unenrol, but only if an
+        // end date has been set.
+        $actionIsNotUnenrol = true;
+        foreach($enrolment_plugins as $enrolmentInstance) {
+            switch($enrolmentInstance->enrol) {
+                case 'gudatabase':
+                    if (!empty($enrolmentInstance->enrolenddate)) {
+                        if ($enrolmentInstance->expireroleid == 0) {
+                            $actionIsNotUnenrol = false;
+                        }
+                    }
+                    break;
+            }
         }
 
+        $this->testresult = $actionIsNotUnenrol;
         return $this->testresult;
     }
 }

@@ -51,8 +51,8 @@ class course_enddate_notset_test implements course_diagnostic_interface {
      */
     public function runTest()
     {
-        // The course doesn't have an end date...
-        $this->testresult = $this->course->enddate == 0;
+        // Does the course have an end date set...
+        $this->testresult = (!empty($this->course->enddate));
         return $this->testresult;
     }
 }

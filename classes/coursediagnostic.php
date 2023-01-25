@@ -266,6 +266,20 @@ class coursediagnostic {
             $testsuite[] = 'selfenrolmentkey';
         }
 
+        if (property_exists($diagnostic_setting, 'autoenrolment_action_after_period') && $diagnostic_setting->autoenrolment_action_after_period) {
+            $testsuite[] = 'autoenrolment_action_after_period';
+        }
+
+        if (property_exists($diagnostic_setting, 'autoenrolment_enable_user_unenrol') && $diagnostic_setting->autoenrolment_enable_user_unenrol) {
+            $testsuite[] = 'enddate_notset';
+            $testsuite[] = 'autoenrolment_enable_user_unenrol';
+        }
+
+        if (property_exists($diagnostic_setting, 'autoenrolment_remove_student_from_groups') && $diagnostic_setting->autoenrolment_remove_student_from_groups) {
+            $testsuite[] = 'enddate_notset';
+            $testsuite[] = 'autoenrolment_remove_student_from_groups';
+        }
+
         return $testsuite;
     }
 
@@ -303,6 +317,26 @@ class coursediagnostic {
             // Assign the test result
             self::$diagnostic_data[$courseid][$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
         }
+
+        // Before returning the results, we need to remove any of the 'notset'
+        // tests that passed - this is skewing our results total and messing
+        // up the colour coding for the notifications. Basically, we only need
+        // to concern ourselves with the 'notset' ones if they failed. We don't
+        // need to know, or care, that they passed.
+        $tmp = [];
+        foreach(self::$diagnostic_data[$courseid] as $testname => $testresult) {
+            $stringmatch = (bool) strstr($testname, 'notset');
+            if ($stringmatch && $testresult == true) {
+                // We don't need this one anymore, just continue onto the next.
+                continue;
+            }
+            $tmp[$testname] = $testresult;
+        }
+
+        // Clear things momentarily...
+        unset(self::$diagnostic_data[$courseid]);
+        // Now add back the cleaned up data...
+        self::$diagnostic_data[$courseid] = $tmp;
 
         return self::$diagnostic_data;
     }

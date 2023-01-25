@@ -46,57 +46,61 @@ class observer {
      */
     public static function course_viewed(\core\event\course_viewed $event) {
 
-        // courseid:1 appears to be the generic default course in Moodle - I don't think we need this...
-        if ((!empty($event->courseid)) && $event->courseid != 1) {
+        $context = \context_course::instance($event->courseid);
 
-            $settings_check = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
+        if (has_capability('report/coursediagnostic:view', $context)) {
+            // courseid:1 appears to be the generic default course in Moodle - I don't think we need this...
+            if ((!empty($event->courseid)) && $event->courseid != 1) {
 
-            if ($settings_check) {
+                $settings_check = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
 
-                \report_coursediagnostic\coursediagnostic::init_cache();
-                $cache_data = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
+                if ($settings_check) {
 
-                if ($cache_data[self::CACHE_KEY . $event->courseid]) {
+                    \report_coursediagnostic\coursediagnostic::init_cache();
+                    $cache_data = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
 
-                    $failed_tests = \report_coursediagnostic\coursediagnostic::parse_results($cache_data[self::CACHE_KEY . $event->courseid]);
+                    if ($cache_data[self::CACHE_KEY . $event->courseid]) {
 
-                } else {
+                        $failed_tests = \report_coursediagnostic\coursediagnostic::parse_results($cache_data[self::CACHE_KEY . $event->courseid]);
 
-                    // Begin by creating the list of tests we need to perform...
-                    $test_suite = \report_coursediagnostic\coursediagnostic::prepare_tests();
+                    } else {
 
-//                    $courseCompletion = $course->enablecompletion;
-//
-//                    // If enablecompletion is currently not set in the course...
-//                    if ($courseCompletion == 0) {
-//                        // Get all activities associated with the course...
-//                        $moduleInfo = get_fast_modinfo($event->courseid);
-//                        $modules = $moduleInfo->get_used_module_names();
-//                        foreach ($modules as $pluginName) {
-//                            $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
-//                            foreach ($cm_info as $moduleName => $moduleData) {
-//                                $isvisible = $moduleData->visible;
-//                            }
-//                        }
-//                    }
+                        // Begin by creating the list of tests we need to perform...
+                        $test_suite = \report_coursediagnostic\coursediagnostic::prepare_tests();
 
-                    $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
-                    $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
-                    \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $event->courseid);
+                        //                    $courseCompletion = $course->enablecompletion;
+                        //
+                        //                    // If enablecompletion is currently not set in the course...
+                        //                    if ($courseCompletion == 0) {
+                        //                        // Get all activities associated with the course...
+                        //                        $moduleInfo = get_fast_modinfo($event->courseid);
+                        //                        $modules = $moduleInfo->get_used_module_names();
+                        //                        foreach ($modules as $pluginName) {
+                        //                            $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
+                        //                            foreach ($cm_info as $moduleName => $moduleData) {
+                        //                                $isvisible = $moduleData->visible;
+                        //                            }
+                        //                        }
+                        //                    }
 
-                }
+                        $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
+                        $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
+                        \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $event->courseid);
 
-                // Now hide/show the alert on the page that links to the report.
-                if ($failed_tests > 0) {
-                    \report_coursediagnostic\coursediagnostic::diagnostic_notification($failed_tests, $event->courseid);
+                    }
 
-                    return true;
+                    // Now hide/show the alert on the page that links to the report.
+                    if ($failed_tests > 0) {
+                        \report_coursediagnostic\coursediagnostic::diagnostic_notification($failed_tests, $event->courseid);
+
+                        return true;
+                    }
+
+                    return false;
                 }
 
                 return false;
             }
-
-            return false;
         }
 
         return false;

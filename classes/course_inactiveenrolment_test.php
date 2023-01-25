@@ -18,7 +18,7 @@
  * Are there inactive users enrolled on this course.
  *
  * This test checks for users that have been inactive on a course.
- * Initially, we determine this if the last login was greater than 1 year.
+ * Initially, we determine this by if the last login was greater than 1 year.
  *
  * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -27,7 +27,7 @@
 
 namespace report_coursediagnostic;
 
-class course_intactiveenrolment_test implements course_diagnostic_interface
+class course_inactiveenrolment_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
@@ -55,11 +55,30 @@ class course_intactiveenrolment_test implements course_diagnostic_interface
     {
         global $PAGE;
 
-        $manager = new \course_enrolment_manager($PAGE, $this->course, null, 0, '', 0, ENROL_USER_ACTIVE);
+        $manager = new \course_enrolment_manager($PAGE, $this->course, null, 0, '', 0, -1);
         $users = $manager->get_users('id');
 
-        $this->testresult = count($users);
+        $inactiveUsers = false;
+        if (!empty($users)) {
+            // As the criteria needs firming up a bit, last access is 90 days.
+            $now = new \DateTimeImmutable(date('Y-m-d'));
+            foreach ($users as $user) {
+                if ($user->lastcourseaccess > 0) {
+                    $lastaccessed = new \DateTimeImmutable(userdate($user->lastcourseaccess));
+                    $interval = $lastaccessed->diff($now);
+                }
 
-        return (bool) $this->testresult;
+                if (($user->lastcourseaccess == 0) || (isset($interval) && $interval->days >= 90)) $inactiveUsers = true;
+
+                $interval = null;
+            }
+        }
+
+        // Yes, we are inverting our result. We want to return false if there
+        // are inactive users, thereby failing. But we want to return true,
+        // thereby passing if there aren't any inactive users.
+        $this->testresult = !$inactiveUsers;
+
+        return $this->testresult;
     }
 }

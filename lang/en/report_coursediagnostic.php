@@ -24,7 +24,7 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['diagnosticoverview:view'] = 'View course diagnostic report';
+$string['coursediagnostic:view'] = 'View course diagnostic report';
 $string['pluginname'] = 'Course diagnostics';
 $string['pluginsettingsname'] = 'Course diagnostic settings';
 $string['privacy:metadata'] = 'The Course diagnostic plugin does not store any personal data.';
@@ -42,9 +42,16 @@ $string['enddate_impact'] = 'This course\'s end date is in the past. MyCampus en
 $string['visibility'] = 'Course visibility';
 $string['visibility_desc'] = 'Test whether a course is hidden or not.';
 $string['visibility_impact'] = 'This course is currently hidden. You can see it, but students can\'t.';
-$string['autoenrolment'] = 'Auto enrolment settings tests';
-$string['autoenrolmentenddate'] = 'End date';
-$string['autoenrolmentenddate_desc'] = 'Test if an auto enrolment end date has been set';
+$string['autoenrolment'] = 'Auto enrolment settings tests (UofG Specific)';
+$string['autoenrolment_action_after_period'] = 'Action after period - unenrol';
+$string['autoenrolment_action_after_period_desc'] = 'Test if Enrol end date is enabled, and "Action after period" has been set to "unenrol" - which will unenrol students from the course.';
+$string['autoenrolment_action_after_period_impact'] = 'Auto enrolment is currently configured to unenrol students from this course once the end date has passed.';
+$string['autoenrolment_enable_user_unenrol'] = 'User unenrol has been been enabled.';
+$string['autoenrolment_enable_user_unenrol_desc'] = 'If enabled, and a valid course end date has been set, students will unenrolled shortly after they are removed from the course in MyCampus. <strong class="red">DATA LOSS!</strong>';
+$string['autoenrolment_enable_user_unenrol_impact'] = 'User unenrol is "enabled" - students will unenrolled shortly after they are removed from the course in MyCampus. WARNING - DATA LOSS!';
+$string['autoenrolment_remove_student_from_groups'] = 'Remove student from group';
+$string['autoenrolment_remove_student_from_groups_desc'] = 'If enabled, and a valid course end date has been set, students will be removed from all groups for this course after they are removed from the class list in MyCampus. <strong class="red">DATA LOSS!</strong>';
+$string['autoenrolment_remove_student_from_groups_impact'] = 'Removal from groups is "enabled" - students will removed from all groups, after being removed from the corresponding class list in MyCampus. WARNING - DATA LOSS!';
 $string['activitycompletion'] = 'Activity completion settings tests';
 $string['activitycompletionenabled'] = 'Activity completion';
 $string['activitycompletion_desc'] = 'Test activity completetion settings if course completion is disabled';
@@ -56,7 +63,8 @@ $string['enrolmentpluginsenabled'] = 'Enrolment plugins disabled';
 $string['enrolmentplugins_desc'] = 'Test whether all enrolment plugins are disabled.';
 $string['enrolmentpluginsenabled_impact'] = 'This course doesn\'t have any enrolment methods enabled.';
 $string['inactiveenrolment'] = 'Inactive user enrolments';
-$string['inactiveenrolment_desc'] = 'Test whether there are inactive users enrolled on a course';
+$string['inactiveenrolment_desc'] = 'Test whether there are inactive users enrolled on a course.';
+$string['inactiveenrolment_impact'] = 'There are 1 or more students enrolled on this course who have been inactive for some time.';
 $string['groupmodeenabled'] = 'Group definition';
 $string['groupmodeenabled_desc'] = 'Test whether Group mode is enabled and no groups have been defined (or all empty)';
 $string['submissiontypes'] = 'Incompatible assignment submission types';
