@@ -28,5 +28,5 @@ defined('MOODLE_INTERNAL') || die;
 $plugin->version = 2022120700;  // Plugin version.
 $plugin->requires = 2021051700; // Requires Moodle 3.11 or greater.
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = 'v1-alpha';
+$plugin->release = 'v1-alpha for Moodle 4.0+';
 $plugin->component = 'report_coursediagnostic'; // Full name of the plugin (used for diagnostics)

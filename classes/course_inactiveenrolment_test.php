@@ -26,7 +26,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class course_inactiveenrolment_test implements course_diagnostic_interface
 {
 

@@ -28,12 +28,7 @@
 
 namespace report_coursediagnostic;
 
-use core\event\enrol_instance_created;
-use core\event\enrol_instance_deleted;
-use core\event\enrol_instance_updated;
-
 defined('MOODLE_INTERNAL') || die();
-
 class observer {
 
     const CACHE_KEY = 'courseid:';
@@ -67,21 +62,6 @@ class observer {
 
                         // Begin by creating the list of tests we need to perform...
                         $test_suite = \report_coursediagnostic\coursediagnostic::prepare_tests();
-
-                        //                    $courseCompletion = $course->enablecompletion;
-                        //
-                        //                    // If enablecompletion is currently not set in the course...
-                        //                    if ($courseCompletion == 0) {
-                        //                        // Get all activities associated with the course...
-                        //                        $moduleInfo = get_fast_modinfo($event->courseid);
-                        //                        $modules = $moduleInfo->get_used_module_names();
-                        //                        foreach ($modules as $pluginName) {
-                        //                            $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
-                        //                            foreach ($cm_info as $moduleName => $moduleData) {
-                        //                                $isvisible = $moduleData->visible;
-                        //                            }
-                        //                        }
-                        //                    }
 
                         $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
                         $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);

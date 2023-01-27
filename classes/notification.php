@@ -33,7 +33,6 @@ namespace report_coursediagnostic;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
-
 class notification {
 
     /**

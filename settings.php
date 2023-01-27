@@ -120,6 +120,16 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
+        $name = new lang_string('activitycompletion', 'report_coursediagnostic');
+        $desc = new lang_string('activitycompletion_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/activitycompletion',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
         $name = new lang_string('coursesize', 'report_coursediagnostic');
         $desc = new lang_string('coursesize_desc', 'report_coursediagnostic');
         $default = 0;
@@ -195,14 +205,6 @@ if ($hassiteconfig) {
             $desc,
             $default);
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
-        $settingspage->add($setting);
-
-        // Activity completion tests
-        $name = new lang_string('activitycompletion', 'report_coursediagnostic');
-        $desc = '';
-        $setting = new admin_setting_heading('activitycompletionhdr',
-            $name,
-            $desc);
         $settingspage->add($setting);
 
         // GCAT - this will be specific to UofG so we need to make these kind of 'options' dynamically loaded.

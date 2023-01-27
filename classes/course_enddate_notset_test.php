@@ -25,7 +25,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class course_enddate_notset_test implements course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */

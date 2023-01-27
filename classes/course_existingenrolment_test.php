@@ -25,7 +25,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class course_existingenrolment_test implements course_diagnostic_interface
 {
 

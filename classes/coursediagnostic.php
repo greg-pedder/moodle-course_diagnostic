@@ -26,7 +26,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class coursediagnostic {
 
     const CACHE_KEY = 'courseid:';
@@ -246,6 +245,10 @@ class coursediagnostic {
 
         if (property_exists($diagnostic_setting, 'submissiontypes') && $diagnostic_setting->submissiontypes) {
             $testsuite[] = 'submissiontypes';
+        }
+
+        if (property_exists($diagnostic_setting, 'activitycompletion') && $diagnostic_setting->activitycompletion) {
+            $testsuite[] = 'activitycompletion';
         }
 
         if (property_exists($diagnostic_setting, 'coursesize') && $diagnostic_setting->coursesize) {

@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Is this course using the Self-enrolment method
+ * Activity completion settings when completion is off in the course.
  *
- * This tests whether self-enrolment has been enabled or not.
- * If it hasn't, we can safely ignore the follow on test.
+ * If Activity Completion is off in the course, have any activity completion
+ * settings been set in any activities linked to the course.
  *
- * @package    report_coursediagnositc
+ * @package
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace report_coursediagnostic;
-class course_selfenrolmentkey_notset_test implements course_diagnostic_interface
+class course_activitycompletion_test implements \report_coursediagnostic\course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
@@ -53,23 +53,29 @@ class course_selfenrolmentkey_notset_test implements course_diagnostic_interface
     public function runTest()
     {
 
-        global $PAGE;
+        $this->testresult = true;
+        $courseCompletion = $this->course->enablecompletion;
+        $activityCompletion = true;
 
-        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
-        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
-
-        $usesSelfEnrolment = false;
-        foreach($enrolment_plugins as $enrolmentInstance) {
-            switch($enrolmentInstance->enrol) {
-                case 'self':
-                    if ($enrolmentInstance->status==0) {
-                        $usesSelfEnrolment = true;
+        // If enablecompletion is currently not set in the course...
+        if ($courseCompletion == 0) {
+            // Get all activities associated with the course...
+            $moduleInfo = get_fast_modinfo($this->course->id);
+            $modules = $moduleInfo->get_used_module_names();
+            foreach ($modules as $pluginName) {
+                $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
+                foreach ($cm_info as $moduleName => $moduleData) {
+                    if ($moduleData->completion > 0) {
+                        // The 'Completion tracking' dropdown in the activity
+                        // settings is something other than 'Show activity...'
+                        $activityCompletion = false;
+                        // We don't need to go any further.
+                        break 2;
                     }
-                    break;
+                }
             }
         }
 
-        $this->testresult = $usesSelfEnrolment;
-        return $this->testresult;
+        return $this->testresult = $activityCompletion;
     }
 }

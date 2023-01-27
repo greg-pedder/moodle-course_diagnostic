@@ -25,7 +25,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
 {
 

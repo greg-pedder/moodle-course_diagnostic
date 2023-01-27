@@ -25,7 +25,6 @@
  */
 
 namespace report_coursediagnostic;
-
 class course_autoenrolment_action_after_period_test implements course_diagnostic_interface
 {
 

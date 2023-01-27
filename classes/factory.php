@@ -25,7 +25,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 class diagnostic_factory {
     /**
      * An instance of the diagnostic_factory class created upon the first request.

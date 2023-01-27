@@ -66,9 +66,17 @@ if ($cfg_settings) {
     $diagnostic_settings_count = \report_coursediagnostic\coursediagnostic::get_settingscount();
 
     if ($diagnostic_settings_count <= 1) {
-        $url = new moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
-        $link = html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
-        $diagnostic_content = html_writer::div(get_string('no_tests_enabled', 'report_coursediagnostic', $link), 'alert alert-info');
+
+        $supportemail = $CFG->supportemail;
+        $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
+        $phrase = get_string('no_tests_enabled', 'report_coursediagnostic', $link);
+        if (has_capability('moodle/site:config', context_system::instance())) {
+            $url = new moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
+            $link = html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
+            $phrase = get_string('no_tests_enabled_admin', 'report_coursediagnostic', $link);
+        }
+
+        $diagnostic_content = html_writer::div($phrase, 'alert alert-info');
     } else {
 
         // Get the tests that have been run...
@@ -146,9 +154,15 @@ if ($cfg_settings) {
         }
     }
 } else {
-    $url = new moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
-    $link = html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
-    $diagnostic_content = html_writer::div(get_string('not_enabled', 'report_coursediagnostic', $link), 'alert alert-info');
+    $supportemail = $CFG->supportemail;
+    $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic', $supportemail));
+    $phrase = get_string('not_enabled', 'report_coursediagnostic', $link);
+    if (has_capability('moodle/site:config', context_system::instance())) {
+        $url = new moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
+        $link = html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
+        $phrase = get_string('not_enabled_admin', 'report_coursediagnostic', $link);
+    }
+    $diagnostic_content = html_writer::div($phrase, 'alert alert-info');
 }
 
 $renderable = new \report_coursediagnostic\output\index_page($diagnostic_content);

@@ -27,7 +27,6 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die();
-
 interface course_diagnostic_interface
 {
     /**
