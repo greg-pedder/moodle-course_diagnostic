@@ -65,7 +65,7 @@ if ($cfg_settings) {
     // Check that one or more tests have been enabled...
     $diagnostic_settings_count = \report_coursediagnostic\coursediagnostic::get_settingscount();
 
-    if ($diagnostic_settings_count <= 1) {
+    if ($diagnostic_settings_count == 0) {
 
         $supportemail = $CFG->supportemail;
         $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
@@ -105,10 +105,8 @@ if ($cfg_settings) {
             foreach ($SESSION->report_coursediagnosticconfig as $configkey => $configvalue) {
 
                 // @todo - refactor this - making use of some kind of table class
-
-                // We don't need to worry about this particular value...
-                if ($configkey == 'enablediagnostic') continue;
-
+                // cell3 is passed an initial value, whereas cell2 isn't - this
+                // is something to do with how Moodle generates table/cell data.
                 $cell1 = new html_table_cell(get_string($configkey, 'report_coursediagnostic'));
                 $cell1->attributes['class'] = 'rightalign ' . $configkey . 'cell';
                 $cell2 = new html_table_cell();
@@ -119,20 +117,39 @@ if ($cfg_settings) {
                 $tablecells = [];
                 $tablecells[] = $cell1;
 
+                // This test has been enabled...
                 if ($configvalue || $configvalue > 0) {
 
+                    // Set an initial value first of all...
                     $cell2->text = $configkey;
 
-                    // Bit scrappy this - refactor to account for these tests that have 2 states
+                    // Begin by assuming each test has failed first of all...
+
+                    // A bit scrappy this - refactor to account for those tests that have 2 states.
                     if (array_key_exists($configkey, $cache_data[0])) {
-                        $cell2->text = get_string($configkey . '_impact', 'report_coursediagnostic');
+                        // We now need to account for our 'result' being an array, or single value.
+                        $options = null;
+                        if (is_array($cache_data[0][$configkey])) {
+                            // Declare $options explicitly.
+                            $options = [];
+                            foreach($cache_data[0][$configkey] as $varname => $varvalue) {
+                                if ($varname == 'testresult') {
+                                    $testresult = $varvalue;
+                                    continue;
+                                }
+                                $options[$varname] = $varvalue;
+                            }
+                        }
+
+                        $cell2->text = get_string($configkey . '_impact', 'report_coursediagnostic', $options);
                     } else {
                         $cell2->text = get_string($configkey . '_notset_impact', 'report_coursediagnostic');
                     }
 
                     $cell3->text = "<span class='badge badge-danger'>" . get_string('failtext', 'report_coursediagnostic') . "</span>";
 
-                    if (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey]) {
+                    // If our test has instead passed, clear and overwrite...
+                    if ((!is_array($cache_data[0][$configkey]) && (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey])) || (isset($testresult) && $testresult)) {
                         $cell2->text = '';
                         $cell3->text = "<span class='badge badge-success'>" . get_string('passtext', 'report_coursediagnostic') . "</span>";
                     }

@@ -74,7 +74,8 @@ class coursediagnostic {
 
         global $SESSION;
 
-        // To avoid extracting the settings values each time this event is triggered, make use of the session...
+        // To avoid a call to the db for the values each time this event is
+        // triggered, make use of the session.
         if (!isset($SESSION->report_coursediagnosticconfig)) {
             $diagnostic_config = get_config('report_coursediagnostic');
             $SESSION->report_coursediagnostic = false;
@@ -84,6 +85,8 @@ class coursediagnostic {
 
                 // Some things we don't need however...
                 unset($diagnostic_config->version);
+                unset($diagnostic_config->enablediagnostic);
+                unset($diagnostic_config->filesizelimit);
 
                 // Here we assign all the settings from the config object...
                 $SESSION->report_coursediagnosticconfig = $diagnostic_config;
@@ -338,13 +341,13 @@ class coursediagnostic {
             // Some tests are a two state test, e.g. if 'enabled', then test.
             // If the first test fails, there's no need to perform the next.
             $stringmatch = (bool) strstr($test_case, 'notset');
-            if ($stringmatch && !$diagnostic_test->testresult) {
+            if ($stringmatch && (!$diagnostic_test->testresult || !$diagnostic_test->testresult['testresult'])) {
                 // Skip the next test as it's not needed.
                 $flag = true;
             }
 
             // Assign the test result
-            $tmpdata[$courseid][$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
+            $tmpdata[$courseid][$diagnostic_test->testname] = $diagnostic_test->testresult;
         }
 
         // Before returning the results, we need to remove any of the 'notset'
@@ -377,8 +380,16 @@ class coursediagnostic {
         // If any of our tests have failed - have our 'alert' banner (the link to the report) display.
         // Based on a % of the number of tests that have failed, display the appropriate severity banner/button
         $total_tests = count(self::$diagnostic_data[$courseid]);
-        $passed = array_sum(self::$diagnostic_data[$courseid]);
-        $failed = ($total_tests - $passed);
+        $passed = [];
+        foreach (self::$diagnostic_data[$courseid] as $result) {
+            if (is_array($result)) {
+                $passed[] = $result['testresult'];
+            } else {
+                $passed[] = $result;
+            }
+        }
+        $total_passed = array_sum($passed);
+        $failed = ($total_tests - $total_passed);
         return round($failed/$total_tests * 100);
     }
 

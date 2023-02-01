@@ -30,28 +30,34 @@ namespace report_coursediagnostic;
 class course_coursefiles_test implements course_diagnostic_interface
 {
 
-    /** @var string The name of the test - needed w/in the report */
+    /** @var string The name of the test - needed w/in the report. */
     public string $testname;
 
-    /** @var object The course object */
+    /** @var object The course object. */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array The test passed or failed, plus other additional options. */
+    public array $testresult;
 
-    /** @var int FILESIZE_100MB - filesize in mdl_files is stored as bytes  */
+    /** @var int The sum total of all files stored for this course. */
+    private static int $totalfiles = 0;
+
+    /** @var int The filesize of all files combined. */
+    private static int $totalfilesize = 0;
+
+    /** @var int 'filesize' in table mdl_files is stored as bytes.  */
     const FILESIZE_100MB = 104857600;
 
-    /** @var int FILESIZE_500MB - filesize in mdl_files is stored as bytes  */
+    /** @var int  */
     const FILESIZE_500MB = 524288000;
 
-    /** @var int FILESIZE_1GB - filesize in mdl_files is stored as bytes  */
+    /** @var int  */
     const FILESIZE_1GB = 1073741824;
 
-    /** @var int FILESIZE_10GB - filesize in mdl_files is stored as bytes  */
+    /** @var int  */
     const FILESIZE_10GB = 10737418240;
 
-    /** @var int FILESIZE_100GB - filesize in mdl_files is stored as bytes  */
+    /** @var int */
     const FILESIZE_100GB = 107374182400;
 
     /**
@@ -92,12 +98,21 @@ class course_coursefiles_test implements course_diagnostic_interface
                 if ($row->filesize > 0) {
                     if ($row->filesize >= $filesizelimit) {
                         $fileSizeWithinLimit = false;
+                        self::$totalfiles = $row->ttl;
+                        self::$totalfilesize = $row->filesize;
                         break;
                     }
                 }
             }
         }
 
-        return $this->testresult = $fileSizeWithinLimit;
+        $this->testresult = [
+            'testresult' => $fileSizeWithinLimit,
+            'totalfiles' => self::$totalfiles,
+            'totalfilesize' => formatSize(self::$totalfilesize),
+            'filesizelimit' => formatSize($filesizelimit)
+        ];
+
+        return $this->testresult;
     }
 }

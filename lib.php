@@ -41,3 +41,23 @@ function report_coursediagnostic_extend_navigation_course($navigation, $course, 
         $navigation->add(get_string('pluginname', 'report_coursediagnostic'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
     }
 }
+
+/**
+ * Utility method to return bytes converted to KB/MB/GB etc.
+ *
+ * @param $a_bytes
+ * @return string|void
+ */
+function formatSize($a_bytes) {
+    if ($a_bytes < 1024) {
+        return $a_bytes .' B';
+    } elseif ($a_bytes < 1048576) {
+        return round($a_bytes / 1024, 1) .' KB';
+    } elseif ($a_bytes < 1073741824) {
+        return round($a_bytes / 1048576, 1) . ' MB';
+    } elseif ($a_bytes < 1099511627776) {
+        return round($a_bytes / 1073741824, 1) . ' GB';
+    } elseif ($a_bytes < 1125899906842624) {
+        return round($a_bytes / 1099511627776, 1) .' TB';
+    }
+}
