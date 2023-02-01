@@ -31,6 +31,7 @@ namespace report_coursediagnostic;
 defined('MOODLE_INTERNAL') || die();
 class observer {
 
+    /** @var string Our key in the cache. */
     const CACHE_KEY = 'courseid:';
 
     /**
@@ -46,27 +47,21 @@ class observer {
         if (has_capability('report/coursediagnostic:view', $context)) {
             // courseid:1 appears to be the generic default course in Moodle - I don't think we need this...
             if ((!empty($event->courseid)) && $event->courseid != 1) {
-
                 $settings_check = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
 
                 if ($settings_check) {
-
                     \report_coursediagnostic\coursediagnostic::init_cache();
                     $cache_data = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
 
                     if ($cache_data[self::CACHE_KEY . $event->courseid]) {
-
                         $failed_tests = \report_coursediagnostic\coursediagnostic::parse_results($cache_data[self::CACHE_KEY . $event->courseid]);
-
                     } else {
-
                         // Begin by creating the list of tests we need to perform...
                         $test_suite = \report_coursediagnostic\coursediagnostic::prepare_tests();
 
                         $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
                         $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
                         \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $event->courseid);
-
                     }
 
                     // Now hide/show the alert on the page that links to the report.
@@ -218,6 +213,7 @@ class observer {
      */
     public static function delete_key_from_cache($courseid): bool
     {
+
         $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
         $cachekey = self::CACHE_KEY . $courseid;
         $cachedata = $cache->get_many([$cachekey]);

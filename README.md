@@ -9,6 +9,7 @@ A scheduled job exists also, which will check for issues in the background and n
 
 # Requirements
 ___
+* Your default caching server. However, for development purposes, the plugin had made use of...
 * Redis server - the latest version is always a good bet...
 * A getting started guide at redis.io (https://redis.io/docs/getting-started/)
 * install and configure on centos7: https://www.linode.com/docs/databases/redis/install-and-configure-redis-on-centos-7
@@ -30,8 +31,10 @@ ___
 * To use, begin by visiting the settings page at Site Administration -> Courses -> Course diagnostic settings.
 * Use the checkboxes to enable the diagnostic tool, and select which test(s) to perform. Save any changes.
 * Simply visit a course page, which will, if enabled run the diagnostic tests, if they haven't been run previously.
-* Data will be stored and pulled from the Redis cache - which has been set to expire data every 30 minutes - this is to prevent running the tests each time you enter a course page.
+* Data will be stored and pulled from the Redis (or system) cache - which has been set to expire data every 30 minutes - this is to prevent running the tests each time you enter a course page.
 * If any errors are found, a notification will appear with a link to the report page.
 * The report page will display a list of tests run, highlighting those that have passed and/or failed.
 * Any changes made at the course settings page, will invalidate the cache for that course.
-* Any changes made at Site Administration ... course diagnostic settings will invalidate the whole cache.
+* Any changes made at the enrolment settings page, will invalidate the cache for that course.
+* Any changes made at the enrolment methods settings page, will invalidate the cache for that course.
+* Any changes made at Site Administration ... course diagnostic settings will invalidate the ^whole^ cache. Be careful with this one, for (hopefully) obvious reasons.

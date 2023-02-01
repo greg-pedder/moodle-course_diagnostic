@@ -211,6 +211,20 @@ class coursediagnostic {
     }
 
     /**
+     * Function that creates an array of tests to be performed.
+     * Taken from the options selected in System Administration.
+     *
+     * To make this extendable, only generic/default tests are included here.
+     * Extendability is provided by allowing end users to supply a JSON file
+     * containing the names of additional tests to be carried out.
+     * The filepath parameter will allow the necessary class files to be stored
+     * outside of the main Moodle directory, thereby not causing any VC issues
+     * if that is how the source code is being managed, for example. End users
+     * only need to ensure their class follows the same format as the generic
+     * tests in order for things to run.
+     *
+     * This will also allow the names of these additional tests to appear in
+     * System Admninistration -> Course -> course diagnostic settings.
      * @return array
      */
     public static function prepare_tests(): array
@@ -251,8 +265,16 @@ class coursediagnostic {
             $testsuite[] = 'activitycompletion';
         }
 
-        if (property_exists($diagnostic_setting, 'coursesize') && $diagnostic_setting->coursesize) {
-            $testsuite[] = 'coursesize';
+        if (property_exists($diagnostic_setting, 'coursefiles') && $diagnostic_setting->coursefiles) {
+            $testsuite[] = 'coursefiles';
+        }
+
+        if (property_exists($diagnostic_setting, 'coursevideo') && $diagnostic_setting->coursevideo) {
+            $testsuite[] = 'coursevideo';
+        }
+
+        if (property_exists($diagnostic_setting, 'courseaudio') && $diagnostic_setting->courseaudio) {
+            $testsuite[] = 'courseaudio';
         }
 
         if (property_exists($diagnostic_setting, 'existingenrolments') && $diagnostic_setting->existingenrolments) {
@@ -282,6 +304,10 @@ class coursediagnostic {
             $testsuite[] = 'autoenrolment_remove_student_from_groups';
         }
 
+        // @todo - implement the mechanism for reading in any additional tests.
+        // There will be a format that needs to be followed, tests will be
+        // rejected otherwise.
+
         return $testsuite;
     }
 
@@ -299,6 +325,7 @@ class coursediagnostic {
         $factory = \diagnostic_factory::instance();
 
         $flag = false;
+        $tmpdata = [];
         foreach ($test_suite as $test_case) {
             if ($flag) {
                 // reset and continue.
@@ -308,7 +335,7 @@ class coursediagnostic {
 
             $diagnostic_test = $factory->create_diagnostic_test_from_config($test_case, $course);
 
-            // Some tests are a two state test, e.g. if enabled, then test.
+            // Some tests are a two state test, e.g. if 'enabled', then test.
             // If the first test fails, there's no need to perform the next.
             $stringmatch = (bool) strstr($test_case, 'notset');
             if ($stringmatch && !$diagnostic_test->testresult) {
@@ -317,7 +344,7 @@ class coursediagnostic {
             }
 
             // Assign the test result
-            self::$diagnostic_data[$courseid][$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
+            $tmpdata[$courseid][$diagnostic_test->testname] = (bool) $diagnostic_test->testresult;
         }
 
         // Before returning the results, we need to remove any of the 'notset'
@@ -326,18 +353,16 @@ class coursediagnostic {
         // to concern ourselves with the 'notset' ones if they failed. We don't
         // need to know, or care, that they passed.
         $tmp = [];
-        foreach(self::$diagnostic_data[$courseid] as $testname => $testresult) {
+        foreach($tmpdata[$courseid] as $testname => $testresult) {
             $stringmatch = (bool) strstr($testname, 'notset');
-            if ($stringmatch && $testresult == true) {
+            if ($stringmatch && $testresult) {
                 // We don't need this one anymore, just continue onto the next.
                 continue;
             }
             $tmp[$testname] = $testresult;
         }
 
-        // Clear things momentarily...
-        unset(self::$diagnostic_data[$courseid]);
-        // Now add back the cleaned up data...
+        // Assign the cleaned data...
         self::$diagnostic_data[$courseid] = $tmp;
 
         return self::$diagnostic_data;
@@ -349,7 +374,7 @@ class coursediagnostic {
      */
     public static function fetch_test_results($courseid): float
     {
-        // If any of our tests have failed - have our 'alert' banner (the link to the report) display
+        // If any of our tests have failed - have our 'alert' banner (the link to the report) display.
         // Based on a % of the number of tests that have failed, display the appropriate severity banner/button
         $total_tests = count(self::$diagnostic_data[$courseid]);
         $passed = array_sum(self::$diagnostic_data[$courseid]);

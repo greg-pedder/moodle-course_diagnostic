@@ -130,10 +130,49 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
+        // Course Size tests
         $name = new lang_string('coursesize', 'report_coursediagnostic');
-        $desc = new lang_string('coursesize_desc', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('coursesizehdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
+
+        $name = new lang_string('filesizelimit', 'report_coursediagnostic');
+        $desc = new lang_string('filesizelimit_desc', 'report_coursediagnostic');
+        $options = array(1 => '100' . get_string('sizemb'), 2 => '500' . get_string('sizemb'), 3 => '1' . get_string('sizegb'), 4 => '10' . get_string('sizegb'), 5 => '100' . get_string('sizegb'));
+        $setting = new admin_setting_configselect('report_coursediagnostic/filesizelimit',
+            $name,
+            $desc,
+            1,
+            $options);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('coursefiles', 'report_coursediagnostic');
+        $desc = new lang_string('coursefiles_desc', 'report_coursediagnostic');
         $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/coursesize',
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/coursefiles',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('coursevideo', 'report_coursediagnostic');
+        $desc = new lang_string('coursevideo_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/coursevideo',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('courseaudio', 'report_coursediagnostic');
+        $desc = new lang_string('courseaudio_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/courseaudio',
             $name,
             $desc,
             $default);
@@ -208,12 +247,12 @@ if ($hassiteconfig) {
         $settingspage->add($setting);
 
         // GCAT - this will be specific to UofG so we need to make these kind of 'options' dynamically loaded.
-        $name = new lang_string('gcat', 'report_coursediagnostic');
-        $desc = '';
-        $setting = new admin_setting_heading('gcathdr',
-            $name,
-            $desc);
-        $settingspage->add($setting);
+//        $name = new lang_string('gcat', 'report_coursediagnostic');
+//        $desc = '';
+//        $setting = new admin_setting_heading('gcathdr',
+//            $name,
+//            $desc);
+//        $settingspage->add($setting);
 
         if (\report_coursediagnostic\coursediagnostic::get_cache_deletion_flag()) {
             \report_coursediagnostic\coursediagnostic::purge_diagnostic_settings_cache();

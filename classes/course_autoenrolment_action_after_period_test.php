@@ -15,11 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
+ * When Action after period is set to 'Unenrol'
  *
- * More indepth description.
+ * This tests if the Action after period drop down menu has been set to
+ * 'Unenrol', and the course has an end date set. This has the impact of
+ * Data loss in that students & grades etc get deleted...permanently.
  *
- * @package
+ * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

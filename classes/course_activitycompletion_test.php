@@ -20,7 +20,7 @@
  * If Activity Completion is off in the course, have any activity completion
  * settings been set in any activities linked to the course.
  *
- * @package
+ * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -57,14 +57,14 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
         $courseCompletion = $this->course->enablecompletion;
         $activityCompletion = true;
 
-        // If enablecompletion is currently not set in the course...
+        // If completion is currently not set in the course...
         if ($courseCompletion == 0) {
             // Get all activities associated with the course...
             $moduleInfo = get_fast_modinfo($this->course->id);
             $modules = $moduleInfo->get_used_module_names();
             foreach ($modules as $pluginName) {
                 $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
-                foreach ($cm_info as $moduleName => $moduleData) {
+                foreach ($cm_info as $moduleData) {
                     if ($moduleData->completion > 0) {
                         // The 'Completion tracking' dropdown in the activity
                         // settings is something other than 'Show activity...'

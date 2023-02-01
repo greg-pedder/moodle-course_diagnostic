@@ -15,9 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
- *
- * More indepth description.
+ * Defined cache used internally by the plugin.
  *
  * @package    report_coursediagnositc
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
