@@ -50,6 +50,24 @@ class observer {
                 $settings_check = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
 
                 if ($settings_check) {
+
+                    // Check that one or more tests have been enabled...
+                    $diagnostic_settings_count = \report_coursediagnostic\coursediagnostic::get_settingscount();
+
+                    if ($diagnostic_settings_count == 0) {
+                        global $CFG;
+                        $supportemail = $CFG->supportemail;
+                        $link = \html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
+                        $phrase = get_string('no_tests_enabled', 'report_coursediagnostic', $link);
+                        if (has_capability('moodle/site:config', \context_system::instance())) {
+                            $url = new \moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
+                            $link = \html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
+                            $phrase = get_string('no_tests_enabled_admin', 'report_coursediagnostic', $link);
+                        }
+
+                        return \report_coursediagnostic\notification::info($phrase);
+                    }
+
                     \report_coursediagnostic\coursediagnostic::init_cache();
                     $cache_data = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
 
@@ -197,6 +215,51 @@ class observer {
      * @return bool
      */
     public static function enrol_instance_deleted(\core\event\enrol_instance_deleted $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * We're looking specifically for when a course assignment is created.
+     * @param \core\event\course_module_created $event
+     * @return bool
+     */
+    public static function course_module_created(\core\event\course_module_created $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * We're looking specifically for when a course assignment is updated.
+     * @param \core\event\course_module_updated $event
+     * @return bool
+     */
+    public static function course_module_updated(\core\event\course_module_updated $event): bool
+    {
+
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
+     * We're looking specifically for when a course assignment is deleted.
+     * @param \core\event\course_module_deleted $event
+     * @return bool
+     */
+    public static function course_module_deleted(\core\event\course_module_deleted $event): bool
     {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {

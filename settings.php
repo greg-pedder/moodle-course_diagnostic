@@ -179,6 +179,24 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
+        // Course assignment tests
+        $name = new lang_string('courseassignment', 'report_coursediagnostic');
+        $desc = '';
+        $setting = new admin_setting_heading('courseassignmenthdr',
+            $name,
+            $desc);
+        $settingspage->add($setting);
+
+        $name = new lang_string('assignmentenddate', 'report_coursediagnostic');
+        $desc = new lang_string('assignmentenddate_desc', 'report_coursediagnostic');
+        $default = 0;
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/assignmentenddate',
+            $name,
+            $desc,
+            $default);
+        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
         // Enrolment plugin tests
         $name = new lang_string('enrolmentplugins', 'report_coursediagnostic');
         $desc = '';

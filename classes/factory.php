@@ -15,9 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
- *
- * More indepth description.
+ * This file uses the factory pattern as part of the course diagnostic tool.
  *
  * @package    report_coursediagnositc
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -26,6 +24,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 class diagnostic_factory {
+
+    /** The cache stores have been disabled */
+    const STATE_STORES_DISABLED = 11;
+
+    /**
+     * The current state of the cache API.
+     * @var int
+     */
+    protected $state = 0;
+
     /**
      * An instance of the diagnostic_factory class created upon the first request.
      * @var diagnostic_factory
@@ -42,19 +50,40 @@ class diagnostic_factory {
     /**
      * Returns an instance of the diagnostic_factory class.
      *
-     * @param bool $forcereload If set to true a new diagnostic_factory instance will be created and used.
      * @return diagnostic_factory
      */
-    public static function instance(bool $forcereload = false): diagnostic_factory
+    public static function instance(): diagnostic_factory
     {
 
-        if ($forcereload || self::$instance === null) {
+        if (self::$instance === null) {
             // Initialise a new factory to facilitate our needs.
-
-            // We're using the regular factory.
-            self::$instance = new diagnostic_factory();
+            if (!empty($CFG->alternative_cache_factory_class)) {
+                $factoryclass = $CFG->alternative_cache_factory_class;
+                self::$instance = new $factoryclass();
+            } else {
+                // We're using the regular factory.
+                self::$instance = new diagnostic_factory();
+                if (defined('CACHE_DISABLE_STORES') && CACHE_DISABLE_STORES !== false) {
+                    // The cache stores have been disabled.
+                    self::$instance->set_state(self::STATE_STORES_DISABLED);
+                }
+            }
         }
         return self::$instance;
+    }
+
+    /**
+     * Updates the state fo the cache API.
+     *
+     * @param int $state
+     * @return bool
+     */
+    public function set_state($state) {
+        if ($state <= $this->state) {
+            return false;
+        }
+        $this->state = $state;
+        return true;
     }
 
     /**

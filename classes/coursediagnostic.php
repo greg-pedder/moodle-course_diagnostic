@@ -280,6 +280,10 @@ class coursediagnostic {
             $testsuite[] = 'courseaudio';
         }
 
+        if (property_exists($diagnostic_setting, 'assignmentenddate') && $diagnostic_setting->assignmentenddate) {
+            $testsuite[] = 'assignmentenddate';
+        }
+
         if (property_exists($diagnostic_setting, 'existingenrolments') && $diagnostic_setting->existingenrolments) {
             $testsuite[] = 'existingenrolments';
         }
@@ -307,8 +311,8 @@ class coursediagnostic {
             $testsuite[] = 'autoenrolment_remove_student_from_groups';
         }
 
-        // @todo - implement the mechanism for reading in any additional tests.
-        // There will be a format that needs to be followed, tests will be
+        // @todo - implement a mechanism for reading in any additional tests.
+        // There will be a format that needs to be followed, tests should be
         // rejected otherwise.
 
         return $testsuite;
@@ -341,7 +345,7 @@ class coursediagnostic {
             // Some tests are a two state test, e.g. if 'enabled', then test.
             // If the first test fails, there's no need to perform the next.
             $stringmatch = (bool) strstr($test_case, 'notset');
-            if ($stringmatch && (!$diagnostic_test->testresult || !$diagnostic_test->testresult['testresult'])) {
+            if ($stringmatch && (!$diagnostic_test->testresult || (!empty($diagnostic_test->testresult['testresult']) && !$diagnostic_test->testresult['testresult']))) {
                 // Skip the next test as it's not needed.
                 $flag = true;
             }
@@ -368,6 +372,7 @@ class coursediagnostic {
         // Assign the cleaned data...
         self::$diagnostic_data[$courseid] = $tmp;
 
+        // Return just the data for this course, not everything else...
         return self::$diagnostic_data;
     }
 

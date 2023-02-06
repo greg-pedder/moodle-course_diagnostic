@@ -32,7 +32,7 @@ require('../../config.php');
 $courseid = required_param('courseid', PARAM_INT);// Course ID.
 $context = context_course::instance($courseid);
 
-$url = new moodle_url('/report/coursediagnostic/index.php', ['course' => $courseid]);
+$url = new moodle_url('/report/coursediagnostic/index.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
 
 if (!$course = $DB->get_record('course', ['id' => $courseid])) {
@@ -116,6 +116,7 @@ if ($cfg_settings) {
                 $cell3->attributes['class'] = 'leftalign ' . $configkey . 'cell';
                 $tablecells = [];
                 $tablecells[] = $cell1;
+                $tmptestresult = false;
 
                 // This test has been enabled...
                 if ($configvalue || $configvalue > 0) {
@@ -134,7 +135,7 @@ if ($cfg_settings) {
                             $options = [];
                             foreach($cache_data[0][$configkey] as $varname => $varvalue) {
                                 if ($varname == 'testresult') {
-                                    $testresult = $varvalue;
+                                    $tmptestresult = $varvalue;
                                     continue;
                                 }
                                 $options[$varname] = $varvalue;
@@ -149,7 +150,7 @@ if ($cfg_settings) {
                     $cell3->text = "<span class='badge badge-danger'>" . get_string('failtext', 'report_coursediagnostic') . "</span>";
 
                     // If our test has instead passed, clear and overwrite...
-                    if ((!is_array($cache_data[0][$configkey]) && (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey])) || (isset($testresult) && $testresult)) {
+                    if ((!is_array($cache_data[0][$configkey]) && (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey])) || (isset($tmptestresult) && $tmptestresult)) {
                         $cell2->text = '';
                         $cell3->text = "<span class='badge badge-success'>" . get_string('passtext', 'report_coursediagnostic') . "</span>";
                     }
@@ -172,7 +173,7 @@ if ($cfg_settings) {
     }
 } else {
     $supportemail = $CFG->supportemail;
-    $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic', $supportemail));
+    $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
     $phrase = get_string('not_enabled', 'report_coursediagnostic', $link);
     if (has_capability('moodle/site:config', context_system::instance())) {
         $url = new moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
