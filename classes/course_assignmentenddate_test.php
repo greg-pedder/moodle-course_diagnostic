@@ -62,7 +62,10 @@ class course_assignmentenddate_test implements \report_coursediagnostic\course_d
         foreach ($assignments as $assignment) {
             if (!isset($assignment->customdata['duedate'])) {
                 $counter++;
-                $url = new \moodle_url($assignment->url->get_path(), ['id' => $assignment->url->param('id')]);
+                // The cm assignment doesn't give us the path to the edit page,
+                // only the view page ($assignment->url->get_path()) - which is
+                // no good to us, hence the hard coded link here :-(
+                $url = new \moodle_url('/course/modedit.php', ['update' => $assignment->url->param('id'), 'return' => 1]);
                 $link = \html_writer::link($url, $assignment->get_name());
                 $assignmenturls[] = $link;
                 $dueDateEnabled = false;

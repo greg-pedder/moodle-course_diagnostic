@@ -71,7 +71,7 @@ $string['courseaudio_impact'] = 'There are <strong>{$a->totalfiles}</strong> aud
 $string['courseassignment'] = 'Course assignment tests';
 $string['assignmentenddate'] = 'Course assignment end date';
 $string['assignmentenddate_desc'] = 'Test whether all course assignment end date\'s have been enabled.';
-$string['assignmentenddate_impact'] = 'The following course {$a->word1} currently {$a->word2} no end date set.<br />{$a->assignmenturls}';
+$string['assignmentenddate_impact'] = 'The following course {$a->word1} currently {$a->word2} no end date set:<br />{$a->assignmenturls}';
 $string['singular_1'] = 'assignment';
 $string['plural_1'] = 'assignments';
 $string['singular_2'] = 'has';
@@ -94,8 +94,6 @@ $string['autoenrolment_enable_user_unenrol_impact'] = 'User unenrol is "enabled"
 $string['autoenrolment_remove_student_from_groups'] = 'Remove student from group';
 $string['autoenrolment_remove_student_from_groups_desc'] = 'If enabled, and a valid course end date has been set, students will be removed from all groups for this course after they are removed from the class list in MyCampus. <strong class="red">DATA LOSS!</strong>';
 $string['autoenrolment_remove_student_from_groups_impact'] = 'Removal from groups is "enabled" - students will removed from all groups, after being removed from the corresponding class list in MyCampus. WARNING - DATA LOSS!';
-
-
 
 $string['gcat'] = 'GCAT configuration';
 $string['existingenrolments'] = 'Existing enrolments'; // Not a course thing??

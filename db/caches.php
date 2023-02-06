@@ -27,6 +27,6 @@ $definitions = [
         'mode'       => cache_store::MODE_APPLICATION,
         'simplekeys' => false,
         'simpledata' => false,
-        'expire' => 1800,
+        'ttl' => 1800, // 30 minutes expiry time.
     ]
 ];

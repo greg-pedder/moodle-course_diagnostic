@@ -138,6 +138,10 @@ if ($cfg_settings) {
                                     $tmptestresult = $varvalue;
                                     continue;
                                 }
+
+                                if (is_array($varvalue)) {
+                                    $varvalue = implode('<br />', $varvalue);
+                                }
                                 $options[$varname] = $varvalue;
                             }
                         }
