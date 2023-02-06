@@ -297,18 +297,8 @@ class coursediagnostic {
             $testsuite[] = 'selfenrolmentkey';
         }
 
-        if (property_exists($diagnostic_setting, 'autoenrolment_action_after_period') && $diagnostic_setting->autoenrolment_action_after_period) {
-            $testsuite[] = 'autoenrolment_action_after_period';
-        }
-
-        if (property_exists($diagnostic_setting, 'autoenrolment_enable_user_unenrol') && $diagnostic_setting->autoenrolment_enable_user_unenrol) {
-            $testsuite[] = 'enddate_notset';
-            $testsuite[] = 'autoenrolment_enable_user_unenrol';
-        }
-
-        if (property_exists($diagnostic_setting, 'autoenrolment_remove_student_from_groups') && $diagnostic_setting->autoenrolment_remove_student_from_groups) {
-            $testsuite[] = 'enddate_notset';
-            $testsuite[] = 'autoenrolment_remove_student_from_groups';
+        if (property_exists($diagnostic_setting, 'autoenrolment_studentdatadeletion') && $diagnostic_setting->autoenrolment_studentdatadeletion) {
+            $testsuite[] = 'autoenrolment_studentdatadeletion';
         }
 
         // @todo - implement a mechanism for reading in any additional tests.

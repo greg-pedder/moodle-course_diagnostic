@@ -110,16 +110,6 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        $name = new lang_string('submissiontypes', 'report_coursediagnostic');
-        $desc = new lang_string('submissiontypes_desc', 'report_coursediagnostic');
-        $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/submissiontypes',
-            $name,
-            $desc,
-            $default);
-        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
-        $settingspage->add($setting);
-
         $name = new lang_string('activitycompletion', 'report_coursediagnostic');
         $desc = new lang_string('activitycompletion_desc', 'report_coursediagnostic');
         $default = 0;
@@ -234,43 +224,15 @@ if ($hassiteconfig) {
             $desc);
         $settingspage->add($setting);
 
-        $name = new lang_string('autoenrolment_action_after_period', 'report_coursediagnostic');
-        $desc = new lang_string('autoenrolment_action_after_period_desc', 'report_coursediagnostic');
+        $name = new lang_string('autoenrolment_studentdatadeletion', 'report_coursediagnostic');
+        $desc = new lang_string('autoenrolment_studentdatadeletion_desc', 'report_coursediagnostic');
         $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_action_after_period',
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_studentdatadeletion',
             $name,
             $desc,
             $default);
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
-
-        $name = new lang_string('autoenrolment_enable_user_unenrol', 'report_coursediagnostic');
-        $desc = new lang_string('autoenrolment_enable_user_unenrol_desc', 'report_coursediagnostic');
-        $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_enable_user_unenrol',
-            $name,
-            $desc,
-            $default);
-        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
-        $settingspage->add($setting);
-
-        $name = new lang_string('autoenrolment_remove_student_from_groups', 'report_coursediagnostic');
-        $desc = new lang_string('autoenrolment_remove_student_from_groups_desc', 'report_coursediagnostic');
-        $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/autoenrolment_remove_student_from_groups',
-            $name,
-            $desc,
-            $default);
-        $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
-        $settingspage->add($setting);
-
-        // GCAT - this will be specific to UofG so we need to make these kind of 'options' dynamically loaded.
-//        $name = new lang_string('gcat', 'report_coursediagnostic');
-//        $desc = '';
-//        $setting = new admin_setting_heading('gcathdr',
-//            $name,
-//            $desc);
-//        $settingspage->add($setting);
 
         if (\report_coursediagnostic\coursediagnostic::get_cache_deletion_flag()) {
             \report_coursediagnostic\coursediagnostic::purge_diagnostic_settings_cache();

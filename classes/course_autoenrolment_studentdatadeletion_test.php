@@ -17,9 +17,10 @@
 /**
  * When Action after period is set to 'Unenrol'
  *
- * This tests if the Action after period drop down menu has been set to
- * 'Unenrol', and the course has an end date set. This has the impact of
- * Data loss in that students & grades etc get deleted...permanently.
+ * This tests if 'Enrolment period' OR 'Enrol end date' have been checked, AND
+ * 'Enable user unenrol' OR 'Enable removal from groups' have been set to 'Yes'
+ * This has the impact of data loss in that students & grades etc get deleted..
+ * ...permanently.
  *
  * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -27,7 +28,7 @@
  */
 
 namespace report_coursediagnostic;
-class course_autoenrolment_action_after_period_test implements course_diagnostic_interface
+class course_autoenrolment_studentdatadeletion_test implements course_diagnostic_interface
 {
 
     /** @var string The name of the test - needed w/in the report */
@@ -58,24 +59,25 @@ class course_autoenrolment_action_after_period_test implements course_diagnostic
         $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
 
-        // We're doing the opposite of what's expected with this next variable.
-        // We want it to return false (and therefore fail) if we find that
-        // the Action after period drop down is set to Unenrol, but only if an
-        // end date has been set.
-        $actionIsNotUnenrol = true;
+        // More than one instance of an enrolment method can be created.
+        // We need to filter and iterate over all the UofG instances,
+        // and fail the test if at least 1 doesn't meet the rule set.
+        $nothingToDisplay = true;
         foreach($enrolment_plugins as $enrolmentInstance) {
             switch($enrolmentInstance->enrol) {
                 case 'gudatabase':
-                    if (!empty($enrolmentInstance->enrolenddate)) {
-                        if ($enrolmentInstance->expireroleid == 0) {
-                            $actionIsNotUnenrol = false;
+                    if (($enrolmentInstance->enrolperiod > 0) || !empty($enrolmentInstance->enrolenddate)) {
+                        if (($enrolmentInstance->customint4 == 1) || ($enrolmentInstance->customint5 == 1)) {
+                            $nothingToDisplay = false;
+                            // No need to go any further...
+                            break;
                         }
                     }
                     break;
             }
         }
 
-        $this->testresult = $actionIsNotUnenrol;
+        $this->testresult = $nothingToDisplay;
         return $this->testresult;
     }
 }
