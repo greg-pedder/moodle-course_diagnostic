@@ -35,8 +35,8 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
     /** @var object The course object */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array $testresult whether the test has passed or failed. */
+    public array $testresult;
 
     /**
      * @param $name
@@ -48,18 +48,21 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    public function runTest()
+    public function runTest(): array
     {
         global $PAGE;
 
-        $manager = new \course_enrolment_manager($PAGE, $this->course, null, 0, '', 0, -1);
+        $manager = new \course_enrolment_manager($PAGE, $this->course, null, '', '', 0, -1);
         $users = $manager->get_users('id');
 
+        $counter = 0;
         $inactiveUsers = false;
+        $participantsurl = new \moodle_url('/user/index.php', ['id' => $this->course->id]);
+        $participantslink = \html_writer::link($participantsurl, get_string('participants_link_text', 'report_coursediagnostic'));
         if (!empty($users)) {
-            // As the criteria needs firming up a bit, last access is 90 days.
+            // As the criteria needs firming up a bit, last access is starting at 90 days.
             $now = new \DateTimeImmutable(date('Y-m-d'));
             foreach ($users as $user) {
                 if ($user->lastcourseaccess > 0) {
@@ -67,7 +70,10 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
                     $interval = $lastaccessed->diff($now);
                 }
 
-                if (($user->lastcourseaccess == 0) || (isset($interval) && $interval->days >= 90)) $inactiveUsers = true;
+                if (($user->lastcourseaccess == 0) || (isset($interval) && $interval->days >= 90)) {
+                    $counter++;
+                    $inactiveUsers = true;
+                }
 
                 $interval = null;
             }
@@ -75,8 +81,15 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
 
         // Yes, we are inverting our result. We want to return false if there
         // are inactive users, thereby failing. But we want to return true,
-        // thereby passing if there aren't any inactive users.
-        $this->testresult = !$inactiveUsers;
+        // thereby passing, if there aren't any inactive users.
+        $this->testresult = [
+            'testresult' => !$inactiveUsers,
+            'participantslink' => $participantslink,
+            'inactiveusercount' => $counter,
+            'word1' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') : get_string('singular_5', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_6', 'report_coursediagnostic') : get_string('singular_6', 'report_coursediagnostic')),
+            'word3' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') : get_string('singular_2', 'report_coursediagnostic'))
+        ];
 
         return $this->testresult;
     }

@@ -33,8 +33,8 @@ class course_studentenrolment_test implements course_diagnostic_interface {
     /** @var object The course object */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array $testresult whether the test has passed or failed. */
+    public array $testresult;
 
     /**
      * @param $name
@@ -45,14 +45,20 @@ class course_studentenrolment_test implements course_diagnostic_interface {
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    public function runTest()
+    public function runTest(): array
     {
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
+        $participantsurl = new \moodle_url('/user/index.php', ['id' => $this->course->id]);
+        $participantslink = \html_writer::link($participantsurl, get_string('participants_link_text', 'report_coursediagnostic'));
 
-        $this->testresult = (bool) $studentyusers;
+        $this->testresult = [
+            'testresult' => (bool) $studentyusers,
+            'participantslink' => $participantslink,
+        ];
+
         return $this->testresult;
     }
 }
