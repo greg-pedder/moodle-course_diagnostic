@@ -177,10 +177,10 @@ if ($hassiteconfig) {
             $desc);
         $settingspage->add($setting);
 
-        $name = new lang_string('assignmentenddate', 'report_coursediagnostic');
-        $desc = new lang_string('assignmentenddate_desc', 'report_coursediagnostic');
+        $name = new lang_string('assignmentduedate', 'report_coursediagnostic');
+        $desc = new lang_string('assignmentduedate_desc', 'report_coursediagnostic');
         $default = 0;
-        $setting = new admin_setting_configcheckbox('report_coursediagnostic/assignmentenddate',
+        $setting = new admin_setting_configcheckbox('report_coursediagnostic/assignmentduedate',
             $name,
             $desc,
             $default);

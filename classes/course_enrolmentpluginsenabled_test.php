@@ -34,8 +34,8 @@ class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
     /** @var object The course object */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array $testresult whether the test has passed or failed. */
+    public array $testresult;
 
     /**
      * @param $name
@@ -49,16 +49,21 @@ class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
     /**
      * Return true or false, the number of enrolment instances we have.
      * Convert the number to a bool - >= 1 true, 0, false.
-     * @return bool
+     * @return array
      */
-    public function runTest(): bool
+    public function runTest(): array
     {
         global $PAGE;
 
         $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+        $enrolmentpluginsurl = new \moodle_url('/enrol/instances.php', ['id' => $this->course->id]);
+        $enrolmentpluginslink = \html_writer::link($enrolmentpluginsurl, get_string('enrolmentplugins_link_text', 'report_coursediagnostic'));
 
-        $this->testresult = (bool) count($enrolment_plugins);
+        $this->testresult = [
+            'testresult' => (bool) count($enrolment_plugins),
+            'enrolmentpluginslink' => $enrolmentpluginslink,
+        ];
 
         return $this->testresult;
     }

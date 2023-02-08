@@ -28,6 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = [
     [
+        'eventname' => '\core\event\course_created',
+        'callback' => 'report_coursediagnostic\observer::course_created'
+    ],
+    [
         'eventname' => '\core\event\course_viewed',
         'callback' => 'report_coursediagnostic\observer::course_viewed'
     ],

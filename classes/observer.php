@@ -35,6 +35,23 @@ class observer {
     const CACHE_KEY = 'courseid:';
 
     /**
+     * Handle the course created event.
+     *
+     * @param \core\event\course_created $event
+     * @return bool
+     */
+    public static function course_created(\core\event\course_created $event): bool
+    {
+
+        // Invalidate the cache for the given course id - if it exists...
+        if ((!empty($event->courseid)) && $event->courseid != 1) {
+            return self::delete_key_from_cache($event->courseid);
+        }
+
+        return false;
+    }
+
+    /**
      * Handle the course viewed event.
      *
      * @param \core\event\course_viewed $event

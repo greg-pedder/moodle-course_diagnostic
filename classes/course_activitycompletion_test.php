@@ -35,8 +35,8 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
     /** @var object The course object */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array $testresult whether the test has passed or failed. */
+    public array $testresult;
 
     /**
      * @param $name
@@ -48,12 +48,11 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    public function runTest()
+    public function runTest(): array
     {
 
-        $this->testresult = true;
         $courseCompletion = $this->course->enablecompletion;
         $activityCompletion = true;
 
@@ -62,20 +61,34 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
             // Get all activities associated with the course...
             $moduleInfo = get_fast_modinfo($this->course->id);
             $modules = $moduleInfo->get_used_module_names();
-            foreach ($modules as $pluginName) {
-                $cm_info = $moduleInfo->get_instances_of($pluginName->get_component());
-                foreach ($cm_info as $moduleData) {
+            $counter = 0;
+            $activityLinks = [];
+            $settingsurl = new \moodle_url('/course/edit.php', ['id' => $this->course->id]);
+            $settingslink = \html_writer::link($settingsurl, get_string('settings_link_text', 'report_coursediagnostic'));
+            foreach ($modules as $module) {
+                $cmInfo = $moduleInfo->get_instances_of($module->get_component());
+                foreach ($cmInfo as $moduleData) {
                     if ($moduleData->completion > 0) {
+                        $counter++;
+                        $url = new \moodle_url('/course/modedit.php', ['update' => $moduleData->url->param('id'), 'return' => 1]);
+                        $link = \html_writer::link($url, $moduleData->get_name());
+                        $activityLinks[] = $link;
                         // The 'Completion tracking' dropdown in the activity
                         // settings is something other than 'Show activity...'
                         $activityCompletion = false;
-                        // We don't need to go any further.
-                        break 2;
                     }
                 }
             }
         }
 
-        return $this->testresult = $activityCompletion;
+        $this->testresult = [
+            'testresult' => $activityCompletion,
+            'activitylinks' => $activityLinks,
+            'settingslink' => $settingslink,
+            'word1' => (($counter > 1) ? get_string('plural_3', 'report_coursediagnostic') : get_string('singular_3', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') : get_string('singular_2', 'report_coursediagnostic'))
+        ];
+
+        return $this->testresult;
     }
 }

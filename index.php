@@ -124,7 +124,7 @@ if ($cfg_settings) {
                     // Set an initial value first of all...
                     $cell2->text = $configkey;
 
-                    // Begin by assuming each test has failed first of all...
+                    // Begin by assuming each test has failed...
 
                     // A bit scrappy this - refactor to account for those tests that have 2 states.
                     if (array_key_exists($configkey, $cache_data[0])) {
@@ -154,7 +154,7 @@ if ($cfg_settings) {
                     $cell3->text = "<span class='badge badge-danger'>" . get_string('failtext', 'report_coursediagnostic') . "</span>";
 
                     // If our test has instead passed, clear and overwrite...
-                    if ((!is_array($cache_data[0][$configkey]) && (isset($cache_data[0][$configkey]) && $cache_data[0][$configkey])) || (isset($tmptestresult) && $tmptestresult)) {
+                    if ((isset($cache_data[0][$configkey]) && !is_array($cache_data[0][$configkey]) && ($cache_data[0][$configkey])) || (isset($tmptestresult) && $tmptestresult)) {
                         $cell2->text = '';
                         $cell3->text = "<span class='badge badge-success'>" . get_string('passtext', 'report_coursediagnostic') . "</span>";
                     }

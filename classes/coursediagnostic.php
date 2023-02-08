@@ -280,8 +280,8 @@ class coursediagnostic {
             $testsuite[] = 'courseaudio';
         }
 
-        if (property_exists($diagnostic_setting, 'assignmentenddate') && $diagnostic_setting->assignmentenddate) {
-            $testsuite[] = 'assignmentenddate';
+        if (property_exists($diagnostic_setting, 'assignmentduedate') && $diagnostic_setting->assignmentduedate) {
+            $testsuite[] = 'assignmentduedate';
         }
 
         if (property_exists($diagnostic_setting, 'existingenrolments') && $diagnostic_setting->existingenrolments) {
@@ -335,7 +335,7 @@ class coursediagnostic {
             // Some tests are a two state test, e.g. if 'enabled', then test.
             // If the first test fails, there's no need to perform the next.
             $stringmatch = (bool) strstr($test_case, 'notset');
-            if ($stringmatch && (!$diagnostic_test->testresult || (!empty($diagnostic_test->testresult['testresult']) && !$diagnostic_test->testresult['testresult']))) {
+            if ($stringmatch && (!$diagnostic_test->testresult || (is_array($diagnostic_test->testresult) && array_key_exists('testresult', $diagnostic_test->testresult) && !$diagnostic_test->testresult['testresult']))) {
                 // Skip the next test as it's not needed.
                 $flag = true;
             }
@@ -352,7 +352,7 @@ class coursediagnostic {
         $tmp = [];
         foreach($tmpdata[$courseid] as $testname => $testresult) {
             $stringmatch = (bool) strstr($testname, 'notset');
-            if ($stringmatch && $testresult) {
+            if ($stringmatch && ($testresult || (!empty($testresult['testresult']) && !$testresult['testresult']))) {
                 // We don't need this one anymore, just continue onto the next.
                 continue;
             }
