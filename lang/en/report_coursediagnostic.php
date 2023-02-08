@@ -89,7 +89,6 @@ $string['enrolmentplugins_link_text'] = 'Enrolment Methods';
 $string['selfenrolmentkey'] = 'Self-enrolment contains a key';
 $string['selfenrolmentkey_desc'] = 'Tests whether, if self-enrolment has been enabled, that a key has been set.';
 $string['selfenrolmentkey_impact'] = 'Self-enrolment is enabled for this course, with no enrolment key. This means anybody can add themselves to this course.';
-$string['selfenrolmentkey_notset_impact'] = 'Self-enrolment is not enabled for this course.';
 $string['autoenrolment'] = 'UofG Specific tests';
 $string['autoenrolment_studentdatadeletion'] = 'Enrolment settings that could delete student data.';
 $string['autoenrolment_studentdatadeletion_desc'] = 'If \'Enrolment period\' or \'Enrol end date\' have been checked, and \'Enable user enrol\' or \'Enable removal from group\' are set to \'Yes\', this would lead to student data being permanently deleted. <strong class="red">DATA LOSS!</strong>';

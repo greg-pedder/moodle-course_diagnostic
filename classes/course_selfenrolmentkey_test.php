@@ -17,7 +17,9 @@
 /**
  * For the Self enrolment method, has a key been set or not.
  *
- * This tests whether a key has been set for the self-enrolment method.
+ * This tests whether, if the self-enrolment method is being used, a key has
+ * been set or not. Returns true if either self enrolment isn't being used,
+ * or, if it is being used and a key has been set. Returns false otherwise.
  *
  * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
@@ -59,20 +61,21 @@ class course_selfenrolmentkey_test implements course_diagnostic_interface
         // if we're using self-enrolment, then this should run fairly quickly.
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
 
-        $selfEnrolmentKeyIsSet = true;
+        $selfEnrolmentKeyOutcome = true;
         foreach($enrolment_plugins as $enrolmentInstance) {
             switch($enrolmentInstance->enrol) {
                 case 'self':
                     if ($enrolmentInstance->status==0) {
                         if(empty($enrolmentInstance->password)) {
-                            $selfEnrolmentKeyIsSet = false;
+                            $selfEnrolmentKeyOutcome = false;
+                            break 2;
                         }
                     }
                     break;
             }
         }
 
-        $this->testresult = $selfEnrolmentKeyIsSet;
+        $this->testresult = $selfEnrolmentKeyOutcome;
         return $this->testresult;
     }
 }

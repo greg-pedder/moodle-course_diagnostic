@@ -293,7 +293,7 @@ class coursediagnostic {
         }
 
         if (property_exists($diagnostic_setting, 'selfenrolmentkey') && $diagnostic_setting->selfenrolmentkey) {
-            $testsuite[] = 'selfenrolmentkey_notset';
+            //$testsuite[] = 'selfenrolmentkey_notset';
             $testsuite[] = 'selfenrolmentkey';
         }
 
