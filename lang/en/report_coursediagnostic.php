@@ -34,7 +34,7 @@ $string['enablediagnostic_desc'] = 'When enabled, the course diagnostic tool wil
 $string['testsuite'] = 'Course settings tests';
 $string['startdate'] = 'Course start date';
 $string['startdate_desc'] = 'Test whether a course start date is in the future.';
-$string['startdate_impact'] = 'This course\'s start date is in the future. MyCampus enrolments are frozen, and won\'t be updated.';
+$string['startdate_impact'] = 'This course\'s start date is in the future. MyCampus enrolments are frozen, and won\'t be updated. If you\'re already using this course right now, you can change the start date on the settings page.';
 $string['enddate'] = 'Course end date';
 $string['enddate_desc'] = 'Test whether a course end date has been enabled, if so, is it valid.';
 $string['enddate_notset_impact'] = 'This course doesn\'t have an end date. Automatic enrolments won\'t work unless you add one. This is to protect old courses from accidental changes.<br />You can change this on the settings page.';
@@ -70,7 +70,7 @@ $string['coursefiles_impact'] = 'There are <strong>{$a->totalfiles}</strong> fil
 $string['coursevideo'] = 'Course videos';
 $string['coursevideo_desc'] = 'Test whether all video files for the course exceed the File Size Limit (set above).';
 $string['coursevideo_impact'] = 'There are <strong>{$a->totalfiles}</strong> videos uploaded for this course, totalling <strong>{$a->totalfilesize}</strong>. This exceeds the current system limit of <strong>{$a->filesizelimit}</strong>.<br />This will be having an impact on the end user experience when viewing this course.<br />Removing unwanted videos will improve the efficiency of your course.';
-$string['courseaudio'] = 'Course Audio';
+$string['courseaudio'] = 'Course audio';
 $string['courseaudio_desc'] = 'Test whether all audio files for the course exceed the File Size Limit (set above).';
 $string['courseaudio_impact'] = 'There are <strong>{$a->totalfiles}</strong> audio files uploaded for this course, totalling <strong>{$a->totalfilesize}</strong>. This exceeds the current system limit of <strong>{$a->filesizelimit}</strong>.<br />This will be having an impact on the end user experience when viewing this course.<br />Removing unwanted audio files will improve the efficiency of your course.';
 $string['courseassignment'] = 'Course assignment tests';
@@ -90,7 +90,7 @@ $string['selfenrolmentkey'] = 'Self-enrolment contains a key';
 $string['selfenrolmentkey_desc'] = 'Tests whether, if self-enrolment has been enabled, that a key has been set.';
 $string['selfenrolmentkey_impact'] = 'Self-enrolment is enabled for this course, with no enrolment key. This means anybody can add themselves to this course.';
 $string['selfenrolmentkey_notset_impact'] = 'Self-enrolment is not enabled for this course.';
-$string['autoenrolment'] = 'Auto enrolment settings tests (UofG Specific)';
+$string['autoenrolment'] = 'UofG Specific tests';
 $string['autoenrolment_studentdatadeletion'] = 'Enrolment settings that could delete student data.';
 $string['autoenrolment_studentdatadeletion_desc'] = 'If \'Enrolment period\' or \'Enrol end date\' have been checked, and \'Enable user enrol\' or \'Enable removal from group\' are set to \'Yes\', this would lead to student data being permanently deleted. <strong class="red">DATA LOSS!</strong>';
 $string['autoenrolment_studentdatadeletion_impact'] = 'The way the following Enrolment {$a->word1} {$a->word2} configured, if left unchecked could lead to the <em><u>permanent loss</u></em> of student data:<br />{$a->enrolmentlinks}<br /><strong>WARNING</strong> - <strong class="red">DATA LOSS!</strong>';
