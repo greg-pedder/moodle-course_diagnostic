@@ -402,8 +402,16 @@ class coursediagnostic {
 
         $tests = $cache_data[0];
         $total_tests = count($tests);
-        $passed = array_sum($tests);
-        $failed = ($total_tests - $passed);
+        $passed = [];
+        foreach ($tests as $result) {
+            if (is_array($result)) {
+                $passed[] = $result['testresult'];
+            } else {
+                $passed[] = $result;
+            }
+        }
+        $total_passed = array_sum($passed);
+        $failed = ($total_tests - $total_passed);
         return round($failed/$total_tests * 100);
     }
 
