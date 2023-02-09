@@ -53,6 +53,7 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
     public function runTest(): array
     {
 
+        global $SESSION;
         $courseCompletion = $this->course->enablecompletion;
         $activityCompletion = true;
         $counter = 0;
@@ -71,7 +72,13 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
                 foreach ($cmInfo as $moduleData) {
                     if ($moduleData->completion > 0) {
                         $counter++;
-                        $url = new \moodle_url('/course/modedit.php', ['update' => $moduleData->url->param('id'), 'return' => 1]);
+                        if ($moduleData->get_url() != null) {
+                            $url = new \moodle_url('/course/modedit.php', ['update' => $moduleData->url->param('id'), 'return' => 1]);
+                        } else {
+                            // So, mod type 'label' doesn't contain an easy way
+                            // to get the url to the edit page...
+                            $url = new \moodle_url('/course/mod.php', ['sesskey' => sesskey(), 'sr' => $moduleData->sectionnum, 'update' => $moduleData->id]);
+                        }
                         $link = \html_writer::link($url, $moduleData->get_name());
                         $activitylinks[] = $link;
                         // The 'Completion tracking' dropdown in the activity
