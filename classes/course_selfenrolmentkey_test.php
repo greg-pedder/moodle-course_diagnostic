@@ -36,8 +36,8 @@ class course_selfenrolmentkey_test implements course_diagnostic_interface
     /** @var object The course object */
     public object $course;
 
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
+    /** @var array $testresult whether the test has passed or failed. */
+    public array $testresult;
 
     /**
      * @param $name
@@ -49,33 +49,47 @@ class course_selfenrolmentkey_test implements course_diagnostic_interface
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    public function runTest()
+    public function runTest(): array
     {
         global $PAGE;
 
         $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
-        // We only return the enabled methods to save iterating through a large
-        // list of methods.As we should have passed the previous test, checking
-        // if we're using self-enrolment, then this should run fairly quickly.
+        // We're only interested in the enabled methods, it saves us iterating
+        // through a large list otherwise...
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
 
         $selfEnrolmentKeyOutcome = true;
+        $counter = 0;
+        $enrolmentlinks = [];
         foreach($enrolment_plugins as $enrolmentInstance) {
             switch($enrolmentInstance->enrol) {
                 case 'self':
                     if ($enrolmentInstance->status==0) {
                         if(empty($enrolmentInstance->password)) {
+                            $counter++;
+                            $url = new \moodle_url('/enrol/editinstance.php', [
+                                'id' => $enrolmentInstance->id,
+                                'courseid' => $enrolmentInstance->courseid,
+                                'type' => $enrolmentInstance->enrol
+                            ]);
+                            $link = \html_writer::link($url, $enrolmentInstance->name);
+                            $enrolmentlinks[] = $link;
                             $selfEnrolmentKeyOutcome = false;
-                            break 2;
                         }
                     }
                     break;
             }
         }
 
-        $this->testresult = $selfEnrolmentKeyOutcome;
+        $this->testresult = [
+            'testresult' => $selfEnrolmentKeyOutcome,
+            'enrolmentlinks' => $enrolmentlinks,
+            'word1' => (($counter > 1) ? get_string('plural_4', 'report_coursediagnostic') : get_string('singular_4', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') : get_string('singular_5', 'report_coursediagnostic'))
+        ];
+
         return $this->testresult;
     }
 }
