@@ -15,44 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
+ * Scheduled task for the course diagnostic plugin
  *
- * More indepth description.
+ * This file contains the config for scheduling the task that ultimately
+ * selects all current courses, and then runs the diagnostic tool against
+ * them
  *
- * @package    report_coursediagnositc
+ * @package    report_coursediagnostic
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_coursediagnostic;
-
 defined('MOODLE_INTERNAL') || die;
-class course_submissiontypes_test implements course_diagnostic_interface
-{
 
-    /** @var string The name of the test - needed w/in the report */
-    public string $testname;
-
-    /** @var object The course object */
-    public object $course;
-
-    /** @var bool $testresult whether the test has passed or failed. */
-    public bool $testresult;
-
-    /**
-     * @param $name
-     * @param $course
-     */
-    public function __construct($name, $course) {
-        $this->testname = $name;
-        $this->course = $course;
-    }
-
-    /**
-     * @return bool
-     */
-    public function runTest()
-    {
-        // TODO: Implement runTest() method.
-    }
-}
+$tasks = [
+    [
+        'classname' => 'report_coursediagnostic\task\run_diagnostic_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ]
+];

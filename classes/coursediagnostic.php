@@ -26,6 +26,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class coursediagnostic {
 
     const CACHE_KEY = 'courseid:';
@@ -87,6 +89,8 @@ class coursediagnostic {
                 unset($diagnostic_config->version);
                 unset($diagnostic_config->enablediagnostic);
                 unset($diagnostic_config->filesizelimit);
+                unset($diagnostic_config->startcourseindex);
+                unset($diagnostic_config->timelimit);
 
                 // Here we assign all the settings from the config object...
                 $SESSION->report_coursediagnosticconfig = $diagnostic_config;
@@ -193,11 +197,15 @@ class coursediagnostic {
      * Only ^ever^ carried out when System Admin->Courses->Course diagnostic
      * Settings page is updated.
      * @return void
+     * @throws \moodle_exception
      */
     public static function purge_diagnostic_settings_cache() {
 
         // Safeguard....
         if (self::$purgeFlag) {
+
+            // Just to be doubly sure...
+            require_sesskey();
 
             // This gets set when the course_viewed event is caught.
             // Have it regenerate after any changes have been made.
@@ -235,70 +243,9 @@ class coursediagnostic {
         $diagnostic_setting = (object) self::get_diagnosticsettings();
         $testsuite = [];
 
-        if (property_exists($diagnostic_setting, 'startdate') && $diagnostic_setting->startdate) {
-            $testsuite[] = 'startdate';
-        }
-
-        if (property_exists($diagnostic_setting, 'enddate') && $diagnostic_setting->enddate) {
-            $testsuite[] = 'enddate_notset';
-            $testsuite[] = 'enddate';
-        }
-
-        if (property_exists($diagnostic_setting, 'visibility') && $diagnostic_setting->visibility) {
-            $testsuite[] = 'visibility';
-        }
-
-        if (property_exists($diagnostic_setting, 'studentenrolment') && $diagnostic_setting->studentenrolment) {
-            $testsuite[] = 'studentenrolment';
-        }
-
-        if (property_exists($diagnostic_setting, 'inactiveenrolment') && $diagnostic_setting->inactiveenrolment) {
-            $testsuite[] = 'inactiveenrolment';
-        }
-
-        if (property_exists($diagnostic_setting, 'groupmode') && $diagnostic_setting->groupmode) {
-            $testsuite[] = 'groupmode';
-        }
-
-        if (property_exists($diagnostic_setting, 'submissiontypes') && $diagnostic_setting->submissiontypes) {
-            $testsuite[] = 'submissiontypes';
-        }
-
-        if (property_exists($diagnostic_setting, 'activitycompletion') && $diagnostic_setting->activitycompletion) {
-            $testsuite[] = 'activitycompletion';
-        }
-
-        if (property_exists($diagnostic_setting, 'coursefiles') && $diagnostic_setting->coursefiles) {
-            $testsuite[] = 'coursefiles';
-        }
-
-        if (property_exists($diagnostic_setting, 'coursevideo') && $diagnostic_setting->coursevideo) {
-            $testsuite[] = 'coursevideo';
-        }
-
-        if (property_exists($diagnostic_setting, 'courseaudio') && $diagnostic_setting->courseaudio) {
-            $testsuite[] = 'courseaudio';
-        }
-
-        if (property_exists($diagnostic_setting, 'assignmentduedate') && $diagnostic_setting->assignmentduedate) {
-            $testsuite[] = 'assignmentduedate';
-        }
-
-        if (property_exists($diagnostic_setting, 'existingenrolments') && $diagnostic_setting->existingenrolments) {
-            $testsuite[] = 'existingenrolments';
-        }
-
-        if (property_exists($diagnostic_setting, 'enrolmentpluginsenabled') && $diagnostic_setting->enrolmentpluginsenabled) {
-            $testsuite[] = 'enrolmentpluginsenabled';
-        }
-
-        if (property_exists($diagnostic_setting, 'selfenrolmentkey') && $diagnostic_setting->selfenrolmentkey) {
-            //$testsuite[] = 'selfenrolmentkey_notset';
-            $testsuite[] = 'selfenrolmentkey';
-        }
-
-        if (property_exists($diagnostic_setting, 'autoenrolment_studentdatadeletion') && $diagnostic_setting->autoenrolment_studentdatadeletion) {
-            $testsuite[] = 'autoenrolment_studentdatadeletion';
+        foreach($diagnostic_setting as $setting => $value) {
+            if ($setting == 'enddate' && !empty($value)) $testsuite[] = 'enddate_notset';
+            if (!empty($value)) $testsuite[] = $setting;
         }
 
         // @todo - implement a mechanism for reading in any additional tests.
@@ -319,7 +266,7 @@ class coursediagnostic {
         // Get all the pertinent course settings that we need...
         $course = get_course($courseid);
         // Pass this data onto our test suite...
-        $factory = \diagnostic_factory::instance();
+        $factory = \report_coursediagnostic\diagnostic_factory::instance();
 
         $flag = false;
         $tmpdata = [];

@@ -27,6 +27,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_coursefiles_test implements course_diagnostic_interface
 {
 
@@ -86,7 +88,9 @@ class course_coursefiles_test implements course_diagnostic_interface
      */
     public function runTest()
     {
-        global $DB;
+        global $DB, $CFG;
+        require_once("$CFG->dirroot/report/coursediagnostic/lib.php");
+
         $filesizeoption = get_config('report_coursediagnostic', 'filesizelimit');
         $filesizelimit = self::$filesizeoptions[$filesizeoption];
         $context = \context_course::instance($this->course->id);

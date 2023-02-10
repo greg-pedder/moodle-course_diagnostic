@@ -25,6 +25,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_startdate_test implements course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */

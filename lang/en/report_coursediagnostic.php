@@ -114,3 +114,6 @@ $string['not_enabled_admin'] = 'The plugin <strong>Course Diagnostic</strong> is
 $string['no_tests_enabled'] = 'The plugin <strong>Course Diagnostic</strong> is enabled, but no tests have been selected. Please contact your {$a} to inform them of this.';
 $string['no_tests_enabled_admin'] = 'The plugin <strong>Course Diagnostic</strong> is enabled, but no tests have been selected. You can change this in the Site Administration {$a}.';
 $string['admin_link_text'] = 'course diagnostic settings page';
+$string['scheduledname'] = 'Course diagnostic task';
+$string['timelimit'] = 'Cron time limit';
+$string['timelimit_desc'] = 'Maximum time (in seconds) that the cron process may run for.';

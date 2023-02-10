@@ -26,6 +26,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_groupmode_test implements course_diagnostic_interface
 {
 

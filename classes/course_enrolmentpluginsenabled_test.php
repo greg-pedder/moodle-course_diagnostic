@@ -25,6 +25,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
 {
 
@@ -53,7 +55,10 @@ class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
      */
     public function runTest(): array
     {
-        global $PAGE;
+        global $PAGE, $CFG;
+        require_once("$CFG->dirroot/enrol/locallib.php");
+        require_once("$CFG->libdir/weblib.php");
+        require_once($CFG->libdir . '/outputcomponents.php');
 
         $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);

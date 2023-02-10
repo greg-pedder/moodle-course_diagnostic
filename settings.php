@@ -32,6 +32,7 @@ if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {
 
+        // General plugin settings
         $name = new lang_string('enablediagnostic', 'report_coursediagnostic');
         $desc = new lang_string('enablediagnostic_desc', 'report_coursediagnostic');
         $default = 0;
@@ -40,6 +41,16 @@ if ($hassiteconfig) {
             $desc,
             $default);
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
+        $settingspage->add($setting);
+
+        $name = new lang_string('timelimit', 'report_coursediagnostic');
+        $desc = new lang_string('timelimit_desc', 'report_coursediagnostic');
+        $default = 30;
+        $setting = new admin_setting_configtext('report_coursediagnostic/timelimit',
+            $name,
+            $desc,
+            $default);
+        // I don't think flushing the cache is needed for this setting
         $settingspage->add($setting);
 
         // Course settings tests

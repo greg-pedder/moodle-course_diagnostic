@@ -28,6 +28,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_autoenrolment_studentdatadeletion_test implements course_diagnostic_interface
 {
 
@@ -54,7 +56,8 @@ class course_autoenrolment_studentdatadeletion_test implements course_diagnostic
      */
     public function runTest(): array
     {
-        global $PAGE;
+        global $PAGE, $CFG;
+        require_once("$CFG->dirroot/enrol/locallib.php");
 
         $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
         $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);

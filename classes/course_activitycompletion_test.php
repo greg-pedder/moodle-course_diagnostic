@@ -26,6 +26,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_activitycompletion_test implements \report_coursediagnostic\course_diagnostic_interface
 {
 

@@ -22,7 +22,9 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class diagnostic_factory {
 
     /** The cache stores have been disabled */

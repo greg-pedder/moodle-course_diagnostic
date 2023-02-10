@@ -25,6 +25,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_visibility_test implements course_diagnostic_interface {
 
 

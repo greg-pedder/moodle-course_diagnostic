@@ -26,6 +26,8 @@
  */
 
 namespace report_coursediagnostic;
+
+defined('MOODLE_INTERNAL') || die;
 class course_inactiveenrolment_test implements course_diagnostic_interface
 {
 
@@ -52,7 +54,10 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
      */
     public function runTest(): array
     {
-        global $PAGE;
+        global $PAGE, $CFG;
+        require_once("$CFG->dirroot/enrol/locallib.php");
+        require_once("$CFG->libdir/weblib.php");
+        require_once($CFG->libdir . '/outputcomponents.php');
 
         $manager = new \course_enrolment_manager($PAGE, $this->course, null, '', '', 0, -1);
         $users = $manager->get_users('id');

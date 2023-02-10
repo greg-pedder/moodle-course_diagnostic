@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Include the required classes.
-require_once($CFG->dirroot.'/report/coursediagnostic/classes/factory.php');
+require_once($CFG->dirroot.'/report/coursediagnostic/classes/diagnostic_factory.php');
 
 /**
  * @param $navigation
