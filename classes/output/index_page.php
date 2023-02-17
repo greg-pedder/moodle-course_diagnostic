@@ -15,11 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
+ * Course diagnostic index page.
  *
- * More indepth description.
- *
- * @package
+ * @package    report_coursediagnostic
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,13 +29,12 @@ use renderer_base;
 use templatable;
 use stdClass;
 
-class index_page implements renderable, templatable
-{
-    /** @var string $diagnostic_table Table data made up of settings and tests passed/failed. */
-    var ?string $diagnostic_table = null;
+class index_page implements renderable, templatable {
+    /** @var string Table data made up of settings and tests passed/failed. */
+    public ?string $diagnostictable = null;
 
-    public function __construct($diagnostic_table) {
-        $this->diagnostic_table = $diagnostic_table;
+    public function __construct($diagnostictable) {
+        $this->diagnostictable = $diagnostictable;
     }
 
     /**
@@ -48,7 +45,7 @@ class index_page implements renderable, templatable
      */
     public function export_for_template(renderer_base $output): stdClass {
         $data = new stdClass();
-        $data->diagnostic_table = print $this->diagnostic_table;
+        $data->diagnostictable = print $this->diagnostictable;
         return $data;
     }
 }

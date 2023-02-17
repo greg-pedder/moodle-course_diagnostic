@@ -32,7 +32,7 @@ if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {
 
-        // General plugin settings
+        // General plugin settings.
         $name = new lang_string('enablediagnostic', 'report_coursediagnostic');
         $desc = new lang_string('enablediagnostic_desc', 'report_coursediagnostic');
         $default = 0;
@@ -50,10 +50,10 @@ if ($hassiteconfig) {
             $name,
             $desc,
             $default);
-        // I don't think flushing the cache is needed for this setting
+        // I don't think flushing the cache is needed for this setting.
         $settingspage->add($setting);
 
-        // Course settings tests
+        // Course settings tests.
         $name = new lang_string('testsuite', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('coursediagnostichdr',
@@ -131,7 +131,7 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        // Course Size tests
+        // Course Size tests.
         $name = new lang_string('coursesize', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('coursesizehdr',
@@ -141,7 +141,13 @@ if ($hassiteconfig) {
 
         $name = new lang_string('filesizelimit', 'report_coursediagnostic');
         $desc = new lang_string('filesizelimit_desc', 'report_coursediagnostic');
-        $options = array(1 => '100' . get_string('sizemb'), 2 => '500' . get_string('sizemb'), 3 => '1' . get_string('sizegb'), 4 => '10' . get_string('sizegb'), 5 => '100' . get_string('sizegb'));
+        $options = [
+            1 => '100' . get_string('sizemb'),
+            2 => '500' . get_string('sizemb'),
+            3 => '1' . get_string('sizegb'),
+            4 => '10' . get_string('sizegb'),
+            5 => '100' . get_string('sizegb')
+        ];
         $setting = new admin_setting_configselect('report_coursediagnostic/filesizelimit',
             $name,
             $desc,
@@ -180,7 +186,7 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        // Course assignment tests
+        // Course assignment tests.
         $name = new lang_string('courseassignment', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('courseassignmenthdr',
@@ -198,7 +204,7 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('report_coursediagnostic\coursediagnostic::flag_cache_for_deletion');
         $settingspage->add($setting);
 
-        // Enrolment plugin tests
+        // Enrolment plugin tests.
         $name = new lang_string('enrolmentplugins', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('enrolmentpluginshdr',
@@ -227,7 +233,7 @@ if ($hassiteconfig) {
         $settingspage->add($setting);
 
         // Auto enrolment tests - applies only to UofG currently.
-        // @todo - find a way to allow these tests to be loaded in separately.
+        // ...@todo - find a way to allow these tests to be loaded in separately.
         $name = new lang_string('autoenrolment', 'report_coursediagnostic');
         $desc = '';
         $setting = new admin_setting_heading('autoenrolmenthdr',

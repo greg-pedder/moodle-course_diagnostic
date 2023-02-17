@@ -27,8 +27,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
-{
+class course_enrolmentpluginsenabled_test implements course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -53,20 +52,18 @@ class course_enrolmentpluginsenabled_test implements course_diagnostic_interface
      * Convert the number to a bool - >= 1 true, 0, false.
      * @return array
      */
-    public function runTest(): array
-    {
+    public function runtest(): array {
         global $PAGE, $CFG;
         require_once("$CFG->dirroot/enrol/locallib.php");
-        require_once("$CFG->libdir/weblib.php");
-        require_once($CFG->libdir . '/outputcomponents.php');
 
-        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
-        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+        $courseenrolmentmgr = new \course_enrolment_manager($PAGE, $this->course);
+        $enrolmentplugins = $courseenrolmentmgr->get_enrolment_instances(true);
         $enrolmentpluginsurl = new \moodle_url('/enrol/instances.php', ['id' => $this->course->id]);
-        $enrolmentpluginslink = \html_writer::link($enrolmentpluginsurl, get_string('enrolmentplugins_link_text', 'report_coursediagnostic'));
+        $enrolmentpluginslink = \html_writer::link($enrolmentpluginsurl,
+            get_string('enrolmentplugins_link_text', 'report_coursediagnostic'));
 
         $this->testresult = [
-            'testresult' => (bool) count($enrolment_plugins),
+            'testresult' => (bool) count($enrolmentplugins),
             'enrolmentpluginslink' => $enrolmentpluginslink,
         ];
 

@@ -29,8 +29,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_selfenrolmentkey_test implements course_diagnostic_interface
-{
+class course_selfenrolmentkey_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -53,35 +52,32 @@ class course_selfenrolmentkey_test implements course_diagnostic_interface
     /**
      * @return array
      */
-    public function runTest(): array
-    {
+    public function runtest(): array {
         global $PAGE, $CFG;
         require_once("$CFG->dirroot/enrol/locallib.php");
-        require_once("$CFG->libdir/weblib.php");
-        require_once($CFG->libdir . '/outputcomponents.php');
 
-        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
+        $courseenrolmentmgr = new \course_enrolment_manager($PAGE, $this->course);
         // We're only interested in the enabled methods, it saves us iterating
         // through a large list otherwise...
-        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+        $enrolmentplugins = $courseenrolmentmgr->get_enrolment_instances(true);
 
-        $selfEnrolmentKeyOutcome = true;
+        $selfenrolmentresult = true;
         $counter = 0;
         $enrolmentlinks = [];
-        foreach($enrolment_plugins as $enrolmentInstance) {
-            switch($enrolmentInstance->enrol) {
+        foreach ($enrolmentplugins as $enrolmentinstance) {
+            switch ($enrolmentinstance->enrol) {
                 case 'self':
-                    if ($enrolmentInstance->status==0) {
-                        if(empty($enrolmentInstance->password)) {
+                    if ($enrolmentinstance->status == 0) {
+                        if (empty($enrolmentinstance->password)) {
                             $counter++;
                             $url = new \moodle_url('/enrol/editinstance.php', [
-                                'id' => $enrolmentInstance->id,
-                                'courseid' => $enrolmentInstance->courseid,
-                                'type' => $enrolmentInstance->enrol
+                                'id' => $enrolmentinstance->id,
+                                'courseid' => $enrolmentinstance->courseid,
+                                'type' => $enrolmentinstance->enrol
                             ]);
-                            $link = \html_writer::link($url, $enrolmentInstance->name);
+                            $link = \html_writer::link($url, $enrolmentinstance->name);
                             $enrolmentlinks[] = $link;
-                            $selfEnrolmentKeyOutcome = false;
+                            $selfenrolmentresult = false;
                         }
                     }
                     break;
@@ -89,10 +85,12 @@ class course_selfenrolmentkey_test implements course_diagnostic_interface
         }
 
         $this->testresult = [
-            'testresult' => $selfEnrolmentKeyOutcome,
+            'testresult' => $selfenrolmentresult,
             'enrolmentlinks' => $enrolmentlinks,
-            'word1' => (($counter > 1) ? get_string('plural_4', 'report_coursediagnostic') : get_string('singular_4', 'report_coursediagnostic')),
-            'word2' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') : get_string('singular_5', 'report_coursediagnostic'))
+            'word1' => (($counter > 1) ? get_string('plural_4', 'report_coursediagnostic') :
+                get_string('singular_4', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') :
+                get_string('singular_5', 'report_coursediagnostic'))
         ];
 
         return $this->testresult;

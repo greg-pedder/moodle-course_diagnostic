@@ -95,8 +95,8 @@ class notification {
             $SESSION->notifications = [];
         }
         $SESSION->notifications[] = (object) [
-            'message'   => $message,
-            'type'      => $level,
+            'message' => $message,
+            'type' => $level,
         ];
     }
 

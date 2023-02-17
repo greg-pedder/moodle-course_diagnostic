@@ -27,7 +27,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_studentenrolment_test implements course_diagnostic_interface {
+class course_studentenrolment_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -49,9 +49,10 @@ class course_studentenrolment_test implements course_diagnostic_interface {
     /**
      * @return array
      */
-    public function runTest(): array
-    {
-        global $PAGE;
+    public function runtest(): array {
+        global $CFG, $PAGE;
+        require_once("$CFG->libdir/accesslib.php");
+
         $studentyusers = count_role_users(5, $PAGE->context);
         $participantsurl = new \moodle_url('/user/index.php', ['id' => $this->course->id]);
         $participantslink = \html_writer::link($participantsurl, get_string('participants_link_text', 'report_coursediagnostic'));

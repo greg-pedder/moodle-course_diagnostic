@@ -27,7 +27,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_enddate_notset_test implements course_diagnostic_interface {
+class course_enddate_notset_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -50,8 +50,7 @@ class course_enddate_notset_test implements course_diagnostic_interface {
     /**
      * @return bool
      */
-    public function runTest()
-    {
+    public function runtest() {
         // Does the course have an end date set...
         $this->testresult = (!empty($this->course->enddate));
         return $this->testresult;

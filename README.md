@@ -38,3 +38,7 @@ ___
 * Any changes made at the enrolment settings page, will invalidate the cache for that course.
 * Any changes made at the enrolment methods settings page, will invalidate the cache for that course.
 * Any changes made at Site Administration ... course diagnostic settings will invalidate the ^whole^ cache. Be careful with this one, for (hopefully) obvious reasons.
+
+# External references
+___
+* Icon courtesy of <a href="https://www.freepik.com/free-vector/set-health-care-medicine-icons-flat-style-pharmacy-symbol-sign-syringe-tablets_10700810.htm#query=diagnostic%20icon&position=8&from_view=keyword&track=ais">Image by macrovector</a> on Freepik

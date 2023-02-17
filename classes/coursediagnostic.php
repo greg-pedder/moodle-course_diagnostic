@@ -40,7 +40,7 @@ class coursediagnostic {
     /**
      * @var array|array[] - a simple list of ranges we can refer to
      */
-    protected static array $alert_ranges = [
+    protected static array $alertranges = [
         'info' => [
             'min' => 1,
             'max' => 34,
@@ -61,39 +61,39 @@ class coursediagnostic {
     /**
      * @var array Contains the results of all selected tests, ready for caching
      */
-    protected static array $diagnostic_data = [];
+    protected static array $diagnosticdata = [];
 
     /**
      * @var bool Needed for when the settings page is submitted.
      */
-    protected static bool $purgeFlag = false;
+    protected static bool $purgeflag = false;
 
     /**
      * @return bool
      */
-    public static function cfg_settings_check(): bool
-    {
+    public static function cfg_settings_check(): bool {
 
         global $SESSION;
 
         // To avoid a call to the db for the values each time this event is
         // triggered, make use of the session.
         if (!isset($SESSION->report_coursediagnosticconfig)) {
-            $diagnostic_config = get_config('report_coursediagnostic');
+            $diagnosticconfig = get_config('report_coursediagnostic');
             $SESSION->report_coursediagnostic = false;
             $SESSION->report_coursediagnosticconfig = null;
-            if (property_exists($diagnostic_config, 'enablediagnostic') && $diagnostic_config->enablediagnostic) {
+            if (property_exists($diagnosticconfig, 'enablediagnostic') && $diagnosticconfig->enablediagnostic) {
                 $SESSION->report_coursediagnostic = true;
 
                 // Some things we don't need however...
-                unset($diagnostic_config->version);
-                unset($diagnostic_config->enablediagnostic);
-                unset($diagnostic_config->filesizelimit);
-                unset($diagnostic_config->startcourseindex);
-                unset($diagnostic_config->timelimit);
+                unset($diagnosticconfig->version);
+                unset($diagnosticconfig->enablediagnostic);
+                unset($diagnosticconfig->filesizelimit);
+                unset($diagnosticconfig->startcourseindex);
+                unset($diagnosticconfig->endcourseindex);
+                unset($diagnosticconfig->timelimit);
 
                 // Here we assign all the settings from the config object...
-                $SESSION->report_coursediagnosticconfig = $diagnostic_config;
+                $SESSION->report_coursediagnosticconfig = $diagnosticconfig;
             } else {
                 return false;
             }
@@ -119,14 +119,13 @@ class coursediagnostic {
     /**
      * @return int
      */
-    public static function get_settingscount() :int
-    {
+    public static function get_settingscount() :int {
 
-        $diagnostic_settings = self::get_diagnosticsettings();
+        $diagnosticsettings = self::get_diagnosticsettings();
         $counter = 0;
-        if ($diagnostic_settings) {
+        if ($diagnosticsettings) {
 
-            foreach ($diagnostic_settings as $k => $v) {
+            foreach ($diagnosticsettings as $k => $v) {
                 if ($v) {
                     $counter++;
                 }
@@ -134,14 +133,12 @@ class coursediagnostic {
         }
 
         return $counter;
-
     }
 
     /**
      * @return mixed
      */
-    public static function init_cache(): mixed
-    {
+    public static function init_cache(): mixed {
         return self::$cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
     }
 
@@ -149,32 +146,30 @@ class coursediagnostic {
      * @param $cachekey
      * @return mixed
      */
-    public static function cache_data_exists($cachekey): mixed
-    {
+    public static function cache_data_exists($cachekey): mixed {
         $cachekey = self::CACHE_KEY . $cachekey;
         return self::$cache->get_many([$cachekey]);
     }
 
     /**
-     * @param $diagnostic_data
+     * @param $diagnosticdata
      * @param $courseid
      * @return mixed
      */
-    public static function prepare_cache($diagnostic_data, $courseid): mixed
-    {
+    public static function prepare_cache($diagnosticdata, $courseid): mixed {
 
         // Now prepare the results for caching...
-        $cache_key = self::CACHE_KEY . $courseid;
-        $cache_data = [
-            $cache_key => [
-                $diagnostic_data[$courseid]
+        $cachekey = self::CACHE_KEY . $courseid;
+        $cachedata = [
+            $cachekey => [
+                $diagnosticdata[$courseid]
             ]
         ];
 
-        // @todo - should we clear self::$diagnostic_data[$courseid] now?
+        // Should we clear self::$diagnosticdata[$courseid] now?
 
         // Cache this data set...
-        return self::$cache->set_many($cache_data);
+        return self::$cache->set_many($cachedata);
     }
 
     /**
@@ -182,11 +177,11 @@ class coursediagnostic {
      * @return void
      */
     public static function flag_cache_for_deletion() {
-        self::$purgeFlag = true;
+        self::$purgeflag = true;
     }
 
     public static function get_cache_deletion_flag() {
-        return self::$purgeFlag;
+        return self::$purgeflag;
     }
 
     /**
@@ -202,7 +197,7 @@ class coursediagnostic {
     public static function purge_diagnostic_settings_cache() {
 
         // Safeguard....
-        if (self::$purgeFlag) {
+        if (self::$purgeflag) {
 
             // Just to be doubly sure...
             require_sesskey();
@@ -216,8 +211,8 @@ class coursediagnostic {
             self::$cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
             self::$cache->purge();
 
-            // reset this now that the cache has been cleared.
-            self::$purgeFlag = false;
+            // Reset this now that the cache has been cleared.
+            self::$purgeflag = false;
         }
     }
 
@@ -238,17 +233,23 @@ class coursediagnostic {
      * System Admninistration -> Course -> course diagnostic settings.
      * @return array
      */
-    public static function prepare_tests(): array
-    {
-        $diagnostic_setting = (object) self::get_diagnosticsettings();
+    public static function prepare_tests(): array {
+
+        $diagnosticsetting = (object) self::get_diagnosticsettings();
         $testsuite = [];
 
-        foreach($diagnostic_setting as $setting => $value) {
-            if ($setting == 'enddate' && !empty($value)) $testsuite[] = 'enddate_notset';
-            if (!empty($value)) $testsuite[] = $setting;
+        foreach ($diagnosticsetting as $setting => $value) {
+
+            if ($setting == 'enddate' && !empty($value)) {
+                $testsuite[] = 'enddate_notset';
+            }
+
+            if (!empty($value)) {
+                $testsuite[] = $setting;
+            }
         }
 
-        // @todo - implement a mechanism for reading in any additional tests.
+        // ...@todo - implement a mechanism for reading in any additional tests.
         // There will be a format that needs to be followed, tests should be
         // rejected otherwise.
 
@@ -256,12 +257,11 @@ class coursediagnostic {
     }
 
     /**
-     * @param $test_suite
+     * @param $testsuite
      * @param $courseid
      * @return array
      */
-    public static function run_tests($test_suite, $courseid): array
-    {
+    public static function run_tests($testsuite, $courseid): array {
 
         // Get all the pertinent course settings that we need...
         $course = get_course($courseid);
@@ -270,25 +270,27 @@ class coursediagnostic {
 
         $flag = false;
         $tmpdata = [];
-        foreach ($test_suite as $test_case) {
+        foreach ($testsuite as $testcase) {
             if ($flag) {
-                // reset and continue.
+                // Reset and continue.
                 $flag = false;
                 continue;
             }
 
-            $diagnostic_test = $factory->create_diagnostic_test_from_config($test_case, $course);
+            $diagnostictest = $factory->create_diagnostic_test_from_config($testcase, $course);
 
             // Some tests are a two state test, e.g. if 'enabled', then test.
             // If the first test fails, there's no need to perform the next.
-            $stringmatch = (bool) strstr($test_case, 'notset');
-            if ($stringmatch && (!$diagnostic_test->testresult || (is_array($diagnostic_test->testresult) && array_key_exists('testresult', $diagnostic_test->testresult) && !$diagnostic_test->testresult['testresult']))) {
+            $stringmatch = (bool) strstr($testcase, 'notset');
+            if ($stringmatch && (!$diagnostictest->testresult || (is_array($diagnostictest->testresult) &&
+                        array_key_exists('testresult', $diagnostictest->testresult) &&
+                        !$diagnostictest->testresult['testresult']))) {
                 // Skip the next test as it's not needed.
                 $flag = true;
             }
 
-            // Assign the test result
-            $tmpdata[$courseid][$diagnostic_test->testname] = $diagnostic_test->testresult;
+            // Assign the test result.
+            $tmpdata[$courseid][$diagnostictest->testname] = $diagnostictest->testresult;
         }
 
         // Before returning the results, we need to remove any of the 'notset'
@@ -297,7 +299,7 @@ class coursediagnostic {
         // to concern ourselves with the 'notset' ones if they failed. We don't
         // need to know, or care, that they passed.
         $tmp = [];
-        foreach($tmpdata[$courseid] as $testname => $testresult) {
+        foreach ($tmpdata[$courseid] as $testname => $testresult) {
             $stringmatch = (bool) strstr($testname, 'notset');
             if ($stringmatch && ($testresult || (!empty($testresult['testresult']) && !$testresult['testresult']))) {
                 // We don't need this one anymore, just continue onto the next.
@@ -307,32 +309,33 @@ class coursediagnostic {
         }
 
         // Assign the cleaned data...
-        self::$diagnostic_data[$courseid] = $tmp;
+        self::$diagnosticdata[$courseid] = $tmp;
 
         // Return just the data for this course, not everything else...
-        return self::$diagnostic_data;
+        return self::$diagnosticdata;
     }
 
     /**
      * @param $courseid
      * @return float
      */
-    public static function fetch_test_results($courseid): float
-    {
+    public static function fetch_test_results($courseid): float {
+
         // If any of our tests have failed - have our 'alert' banner (the link to the report) display.
-        // Based on a % of the number of tests that have failed, display the appropriate severity banner/button
-        $total_tests = count(self::$diagnostic_data[$courseid]);
+        // Based on a % of the number of tests that have failed, display the appropriate severity banner/button.
+        $totaltests = count(self::$diagnosticdata[$courseid]);
         $passed = [];
-        foreach (self::$diagnostic_data[$courseid] as $result) {
+        foreach (self::$diagnosticdata[$courseid] as $result) {
             if (is_array($result)) {
                 $passed[] = $result['testresult'];
             } else {
                 $passed[] = $result;
             }
         }
-        $total_passed = array_sum($passed);
-        $failed = ($total_tests - $total_passed);
-        return round($failed/$total_tests * 100);
+        $totalpassed = array_sum($passed);
+        $failed = ($totaltests - $totalpassed);
+
+        return round($failed / $totaltests * 100);
     }
 
     /**
@@ -341,14 +344,13 @@ class coursediagnostic {
      * (link to the report) displayed. Based on a % of the number of tests that
      * have failed, use the appropriate severity class for the alert
      *
-     * @param $cache_data
+     * @param $cachedata
      * @return float
      */
-    public static function parse_results($cache_data): float
-    {
+    public static function parse_results($cachedata): float {
 
-        $tests = $cache_data[0];
-        $total_tests = count($tests);
+        $tests = $cachedata[0];
+        $totaltests = count($tests);
         $passed = [];
         foreach ($tests as $result) {
             if (is_array($result)) {
@@ -357,29 +359,31 @@ class coursediagnostic {
                 $passed[] = $result;
             }
         }
-        $total_passed = array_sum($passed);
-        $failed = ($total_tests - $total_passed);
-        return round($failed/$total_tests * 100);
+        $totalpassed = array_sum($passed);
+        $failed = ($totaltests - $totalpassed);
+
+        return round($failed / $totaltests * 100);
     }
 
     /**
-     * @param $failed_tests
+     * @param $failedtests
      * @param $courseid
      * @return mixed
      */
-    public static function diagnostic_notification($failed_tests, $courseid): mixed
-    {
+    public static function diagnostic_notification($failedtests, $courseid): mixed {
 
         $class = '';
         $messagetext = '';
-        foreach(self::$alert_ranges as $classname => $range) {
-            if ($failed_tests >= $range['min'] && $failed_tests <= $range['max']) {
+        foreach (self::$alertranges as $classname => $range) {
+            if ($failedtests >= $range['min'] && $failedtests <= $range['max']) {
                 $class = $classname;
                 $messagetext = $range['messagetext'];
                 break;
             }
         }
-        $message = '<strong>' . $messagetext . '</strong> You can review what needs to be set <a class="alert-link" href="/report/coursediagnostic/index.php?courseid='.$courseid.'">on the report page</a>.';
+        $message = '<strong>' . $messagetext . '</strong> You can review what needs to be set <a class="alert-link" ';
+        $message .= 'href="/report/coursediagnostic/index.php?courseid='.$courseid.'">on the report page</a>.';
+
         return \report_coursediagnostic\notification::$class($message);
     }
 }

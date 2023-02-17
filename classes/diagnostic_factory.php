@@ -54,8 +54,7 @@ class diagnostic_factory {
      *
      * @return diagnostic_factory
      */
-    public static function instance(): diagnostic_factory
-    {
+    public static function instance(): diagnostic_factory {
 
         if (self::$instance === null) {
             // Initialise a new factory to facilitate our needs.
@@ -75,16 +74,19 @@ class diagnostic_factory {
     }
 
     /**
-     * Updates the state fo the cache API.
+     * Updates the state of the cache API.
      *
      * @param int $state
      * @return bool
      */
     public function set_state($state) {
+
         if ($state <= $this->state) {
             return false;
         }
+
         $this->state = $state;
+
         return true;
     }
 
@@ -103,7 +105,7 @@ class diagnostic_factory {
 
         $testclass = new $fqclassname($name, $course);
 
-        $testclass->runTest();
+        $testclass->runtest();
 
         return $testclass;
     }

@@ -40,8 +40,7 @@ class observer {
      * @param \core\event\course_created $event
      * @return bool
      */
-    public static function course_created(\core\event\course_created $event): bool
-    {
+    public static function course_created(\core\event\course_created $event): bool {
 
         // Invalidate the cache for the given course id - if it exists...
         if ((!empty($event->courseid)) && $event->courseid != 1) {
@@ -62,19 +61,20 @@ class observer {
         $context = \context_course::instance($event->courseid);
 
         if (has_capability('report/coursediagnostic:view', $context)) {
-            // courseid:1 appears to be the generic default course in Moodle - I don't think we need this...
+            // ...courseid:1 appears to be the generic default course in Moodle - I don't think we need this.
             if ((!empty($event->courseid)) && $event->courseid != 1) {
-                $settings_check = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
+                $settingscheck = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
 
-                if ($settings_check) {
+                if ($settingscheck) {
 
                     // Check that one or more tests have been enabled...
-                    $diagnostic_settings_count = \report_coursediagnostic\coursediagnostic::get_settingscount();
+                    $diagnosticsettingscount = \report_coursediagnostic\coursediagnostic::get_settingscount();
 
-                    if ($diagnostic_settings_count == 0) {
+                    if ($diagnosticsettingscount == 0) {
                         global $CFG;
                         $supportemail = $CFG->supportemail;
-                        $link = \html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
+                        $link = \html_writer::link("mailto:{$supportemail}",
+                            get_string('system_administrator', 'report_coursediagnostic'));
                         $phrase = get_string('no_tests_enabled', 'report_coursediagnostic', $link);
                         if (has_capability('moodle/site:config', \context_system::instance())) {
                             $url = new \moodle_url('/admin/settings.php', ['section' => 'coursediagnosticsettings']);
@@ -86,22 +86,23 @@ class observer {
                     }
 
                     \report_coursediagnostic\coursediagnostic::init_cache();
-                    $cache_data = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
+                    $cachedata = \report_coursediagnostic\coursediagnostic::cache_data_exists($event->courseid);
 
-                    if ($cache_data[self::CACHE_KEY . $event->courseid]) {
-                        $failed_tests = \report_coursediagnostic\coursediagnostic::parse_results($cache_data[self::CACHE_KEY . $event->courseid]);
+                    if ($cachedata[self::CACHE_KEY . $event->courseid]) {
+                        $failedtests = \report_coursediagnostic\coursediagnostic::parse_results(
+                            $cachedata[self::CACHE_KEY . $event->courseid]);
                     } else {
                         // Begin by creating the list of tests we need to perform...
-                        $test_suite = \report_coursediagnostic\coursediagnostic::prepare_tests();
+                        $testsuite = \report_coursediagnostic\coursediagnostic::prepare_tests();
 
-                        $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($test_suite, $event->courseid);
-                        $failed_tests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
-                        \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $event->courseid);
+                        $diagnosticdata = \report_coursediagnostic\coursediagnostic::run_tests($testsuite, $event->courseid);
+                        $failedtests = \report_coursediagnostic\coursediagnostic::fetch_test_results($event->courseid);
+                        \report_coursediagnostic\coursediagnostic::prepare_cache($diagnosticdata, $event->courseid);
                     }
 
                     // Now hide/show the alert on the page that links to the report.
-                    if ($failed_tests > 0) {
-                        \report_coursediagnostic\coursediagnostic::diagnostic_notification($failed_tests, $event->courseid);
+                    if ($failedtests > 0) {
+                        \report_coursediagnostic\coursediagnostic::diagnostic_notification($failedtests, $event->courseid);
 
                         return true;
                     }
@@ -122,10 +123,9 @@ class observer {
      * @param \core\event\course_updated $event
      * @return bool
      */
-    public static function course_updated(\core\event\course_updated $event): bool
-    {
+    public static function course_updated(\core\event\course_updated $event): bool {
 
-        // Invalidate the cache for the given course id - if it exists...
+        // Invalidate the cache for the given course id - if it exists.
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
         }
@@ -139,10 +139,9 @@ class observer {
      * @param \core\event\course_deleted $event
      * @return bool
      */
-    public static function course_deleted(\core\event\course_deleted $event): bool
-    {
+    public static function course_deleted(\core\event\course_deleted $event): bool {
 
-        // Invalidate the cache for the given course id - if it exists...
+        // Invalidate the cache for the given course id - if it exists.
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
         }
@@ -157,8 +156,7 @@ class observer {
      * @param \core\event\user_enrolment_created $event
      * @return bool
      */
-    public static function user_enrolment_created(\core\event\user_enrolment_created $event): bool
-    {
+    public static function user_enrolment_created(\core\event\user_enrolment_created $event): bool {
 
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
@@ -177,8 +175,7 @@ class observer {
      * @param \core\event\user_enrolment_deleted $event
      * @return bool
      */
-    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event): bool
-    {
+    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event): bool {
 
         global $PAGE;
         $studentyusers = count_role_users(5, $PAGE->context);
@@ -197,8 +194,7 @@ class observer {
      * @param enrol_instance_created $event
      * @return bool
      */
-    public static function enrol_instance_created(\core\event\enrol_instance_created $event): bool
-    {
+    public static function enrol_instance_created(\core\event\enrol_instance_created $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -214,8 +210,7 @@ class observer {
      * @param enrol_instance_updated $event
      * @return bool
      */
-    public static function enrol_instance_updated(\core\event\enrol_instance_updated $event): bool
-    {
+    public static function enrol_instance_updated(\core\event\enrol_instance_updated $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -231,8 +226,7 @@ class observer {
      * @param enrol_instance_deleted $event
      * @return bool
      */
-    public static function enrol_instance_deleted(\core\event\enrol_instance_deleted $event): bool
-    {
+    public static function enrol_instance_deleted(\core\event\enrol_instance_deleted $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -246,8 +240,7 @@ class observer {
      * @param \core\event\course_module_created $event
      * @return bool
      */
-    public static function course_module_created(\core\event\course_module_created $event): bool
-    {
+    public static function course_module_created(\core\event\course_module_created $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -261,8 +254,7 @@ class observer {
      * @param \core\event\course_module_updated $event
      * @return bool
      */
-    public static function course_module_updated(\core\event\course_module_updated $event): bool
-    {
+    public static function course_module_updated(\core\event\course_module_updated $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -276,8 +268,7 @@ class observer {
      * @param \core\event\course_module_deleted $event
      * @return bool
      */
-    public static function course_module_deleted(\core\event\course_module_deleted $event): bool
-    {
+    public static function course_module_deleted(\core\event\course_module_deleted $event): bool {
 
         if ((!empty($event->courseid)) && $event->courseid != 1) {
             return self::delete_key_from_cache($event->courseid);
@@ -291,8 +282,7 @@ class observer {
      * @param $courseid
      * @return bool
      */
-    public static function delete_key_from_cache($courseid): bool
-    {
+    public static function delete_key_from_cache($courseid): bool {
 
         $cache = \cache::make('report_coursediagnostic', 'coursediagnosticdata');
         $cachekey = self::CACHE_KEY . $courseid;

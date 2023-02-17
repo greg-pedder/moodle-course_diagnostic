@@ -29,8 +29,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_coursefiles_test implements course_diagnostic_interface
-{
+class course_coursefiles_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report. */
     public string $testname;
@@ -86,22 +85,23 @@ class course_coursefiles_test implements course_diagnostic_interface
     /**
      * @return bool
      */
-    public function runTest()
-    {
+    public function runtest() {
         global $DB, $CFG;
         require_once("$CFG->dirroot/report/coursediagnostic/lib.php");
 
         $filesizeoption = get_config('report_coursediagnostic', 'filesizelimit');
         $filesizelimit = self::$filesizeoptions[$filesizeoption];
         $context = \context_course::instance($this->course->id);
-        $result = $DB->get_records_sql('SELECT COUNT(*) AS ttl, SUM(filesize) AS filesize FROM {files} mf JOIN {context} mc ON mc.id = mf.contextid WHERE mc.path LIKE "'.$context->path.'/%" AND mf.filename <> "."');
+        $result = $DB->get_records_sql('SELECT COUNT(*) AS ttl, SUM(filesize) AS filesize FROM {files} mf
+                                        JOIN {context} mc ON mc.id = mf.contextid WHERE mc.path LIKE "'.$context->path.'/%"
+                                        AND mf.filename <> "."');
 
-        $fileSizeWithinLimit = true;
+        $filesizewithinlimit = true;
         if (count($result) > 0) {
             foreach ($result as $row) {
                 if ($row->filesize > 0) {
                     if ($row->filesize >= $filesizelimit) {
-                        $fileSizeWithinLimit = false;
+                        $filesizewithinlimit = false;
                         self::$totalfiles = $row->ttl;
                         self::$totalfilesize = $row->filesize;
                         break;
@@ -111,10 +111,10 @@ class course_coursefiles_test implements course_diagnostic_interface
         }
 
         $this->testresult = [
-            'testresult' => $fileSizeWithinLimit,
+            'testresult' => $filesizewithinlimit,
             'totalfiles' => self::$totalfiles,
-            'totalfilesize' => formatSize(self::$totalfilesize),
-            'filesizelimit' => formatSize($filesizelimit)
+            'totalfilesize' => formatsize(self::$totalfilesize),
+            'filesizelimit' => formatsize($filesizelimit)
         ];
 
         return $this->testresult;

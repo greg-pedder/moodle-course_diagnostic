@@ -30,8 +30,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_autoenrolment_studentdatadeletion_test implements course_diagnostic_interface
-{
+class course_autoenrolment_studentdatadeletion_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -54,34 +53,33 @@ class course_autoenrolment_studentdatadeletion_test implements course_diagnostic
     /**
      * @return array
      */
-    public function runTest(): array
-    {
+    public function runtest(): array {
         global $PAGE, $CFG;
         require_once("$CFG->dirroot/enrol/locallib.php");
 
-        $course_enrolment_mgr = new \course_enrolment_manager($PAGE, $this->course);
-        $enrolment_plugins = $course_enrolment_mgr->get_enrolment_instances(true);
+        $courseenrolmentmgr = new \course_enrolment_manager($PAGE, $this->course);
+        $enrolmentplugins = $courseenrolmentmgr->get_enrolment_instances(true);
 
         // More than one instance of an enrolment method can be created.
         // We need to filter and iterate over all the UofG instances,
         // and fail the test if at least 1 doesn't meet the rule set.
-        $nothingToDisplay = true;
+        $nothingtodisplay = true;
         $counter = 0;
         $enrolmentlinks = [];
-        foreach($enrolment_plugins as $enrolmentInstance) {
-            switch($enrolmentInstance->enrol) {
+        foreach ($enrolmentplugins as $enrolmentinstance) {
+            switch($enrolmentinstance->enrol) {
                 case 'gudatabase':
-                    if (($enrolmentInstance->enrolperiod > 0) || !empty($enrolmentInstance->enrolenddate)) {
-                        if (($enrolmentInstance->customint4 == 1) || ($enrolmentInstance->customint5 == 1)) {
+                    if (($enrolmentinstance->enrolperiod > 0) || !empty($enrolmentinstance->enrolenddate)) {
+                        if (($enrolmentinstance->customint4 == 1) || ($enrolmentinstance->customint5 == 1)) {
                             $counter++;
                             $url = new \moodle_url('/enrol/editinstance.php', [
-                                'id' => $enrolmentInstance->id,
-                                'courseid' => $enrolmentInstance->courseid,
-                                'type' => $enrolmentInstance->enrol
+                                'id' => $enrolmentinstance->id,
+                                'courseid' => $enrolmentinstance->courseid,
+                                'type' => $enrolmentinstance->enrol
                             ]);
-                            $link = \html_writer::link($url, $enrolmentInstance->name);
+                            $link = \html_writer::link($url, $enrolmentinstance->name);
                             $enrolmentlinks[] = $link;
-                            $nothingToDisplay = false;
+                            $nothingtodisplay = false;
                         }
                     }
                     break;
@@ -89,10 +87,12 @@ class course_autoenrolment_studentdatadeletion_test implements course_diagnostic
         }
 
         $this->testresult = [
-            'testresult' => $nothingToDisplay,
+            'testresult' => $nothingtodisplay,
             'enrolmentlinks' => $enrolmentlinks,
-            'word1' => (($counter > 1) ? get_string('plural_4', 'report_coursediagnostic') : get_string('singular_4', 'report_coursediagnostic')),
-            'word2' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') : get_string('singular_5', 'report_coursediagnostic'))
+            'word1' => (($counter > 1) ? get_string('plural_4', 'report_coursediagnostic') :
+                get_string('singular_4', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') :
+                get_string('singular_5', 'report_coursediagnostic'))
         ];
 
         return $this->testresult;

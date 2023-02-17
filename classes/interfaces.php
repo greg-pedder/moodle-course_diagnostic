@@ -19,7 +19,7 @@
  *
  * Define the 'contract' that implementing classes need to adhere to.
  *
- * @package
+ * @package    report_coursediagnostic
  * @copyright  2022 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,10 +27,9 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die();
-interface course_diagnostic_interface
-{
+interface course_diagnostic_interface {
     /**
      * @return bool
      */
-    public function runTest();
+    public function runtest();
 }

@@ -27,8 +27,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_assignmentduedate_test implements \report_coursediagnostic\course_diagnostic_interface
-{
+class course_assignmentduedate_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,14 +50,13 @@ class course_assignmentduedate_test implements \report_coursediagnostic\course_d
     /**
      * @return array
      */
-    public function runTest(): array
-    {
+    public function runtest(): array {
         // Do any of the course assignments have a due date set...
 
         // Get all activities associated with the course...
-        $moduleInfo = get_fast_modinfo($this->course->id);
-        $assignments = $moduleInfo->get_instances_of('assign');
-        $dueDateEnabled = true;
+        $moduleinfo = get_fast_modinfo($this->course->id);
+        $assignments = $moduleinfo->get_instances_of('assign');
+        $duedateenabled = true;
         $counter = 0;
         $assignmentlinks = [];
         foreach ($assignments as $assignment) {
@@ -66,19 +64,21 @@ class course_assignmentduedate_test implements \report_coursediagnostic\course_d
                 $counter++;
                 // The cm assignment doesn't give us the path to the edit page,
                 // only the view page ($assignment->url->get_path()) - which is
-                // no good to us, hence the hard coded link here :-(
+                // no good to us, hence the hard coded link here :-(.
                 $url = new \moodle_url('/course/modedit.php', ['update' => $assignment->url->param('id'), 'return' => 1]);
                 $link = \html_writer::link($url, $assignment->get_name());
                 $assignmentlinks[] = $link;
-                $dueDateEnabled = false;
+                $duedateenabled = false;
             }
         }
 
         $this->testresult = [
-            'testresult' => $dueDateEnabled,
+            'testresult' => $duedateenabled,
             'assignmentlinks' => $assignmentlinks,
-            'word1' => (($counter > 1) ? get_string('plural_1', 'report_coursediagnostic') : get_string('singular_1', 'report_coursediagnostic')),
-            'word2' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') : get_string('singular_2', 'report_coursediagnostic'))
+            'word1' => (($counter > 1) ? get_string('plural_1', 'report_coursediagnostic') :
+                get_string('singular_1', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') :
+                get_string('singular_2', 'report_coursediagnostic'))
         ];
 
         return $this->testresult;

@@ -28,8 +28,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_inactiveenrolment_test implements course_diagnostic_interface
-{
+class course_inactiveenrolment_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -52,18 +51,15 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
     /**
      * @return array
      */
-    public function runTest(): array
-    {
+    public function runtest(): array {
         global $PAGE, $CFG;
         require_once("$CFG->dirroot/enrol/locallib.php");
-        require_once("$CFG->libdir/weblib.php");
-        require_once($CFG->libdir . '/outputcomponents.php');
 
         $manager = new \course_enrolment_manager($PAGE, $this->course, null, '', '', 0, -1);
         $users = $manager->get_users('id');
 
         $counter = 0;
-        $inactiveUsers = false;
+        $inactiveusers = false;
         $participantsurl = new \moodle_url('/user/index.php', ['id' => $this->course->id]);
         $participantslink = \html_writer::link($participantsurl, get_string('participants_link_text', 'report_coursediagnostic'));
         if (!empty($users)) {
@@ -77,7 +73,7 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
 
                 if (($user->lastcourseaccess == 0) || (isset($interval) && $interval->days >= 90)) {
                     $counter++;
-                    $inactiveUsers = true;
+                    $inactiveusers = true;
                 }
 
                 $interval = null;
@@ -88,12 +84,15 @@ class course_inactiveenrolment_test implements course_diagnostic_interface
         // are inactive users, thereby failing. But we want to return true,
         // thereby passing, if there aren't any inactive users.
         $this->testresult = [
-            'testresult' => !$inactiveUsers,
+            'testresult' => !$inactiveusers,
             'participantslink' => $participantslink,
             'inactiveusercount' => $counter,
-            'word1' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') : get_string('singular_5', 'report_coursediagnostic')),
-            'word2' => (($counter > 1) ? get_string('plural_6', 'report_coursediagnostic') : get_string('singular_6', 'report_coursediagnostic')),
-            'word3' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') : get_string('singular_2', 'report_coursediagnostic'))
+            'word1' => (($counter > 1) ? get_string('plural_5', 'report_coursediagnostic') :
+                get_string('singular_5', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_6', 'report_coursediagnostic') :
+                get_string('singular_6', 'report_coursediagnostic')),
+            'word3' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') :
+                get_string('singular_2', 'report_coursediagnostic'))
         ];
 
         return $this->testresult;

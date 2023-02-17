@@ -22,9 +22,11 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $definitions = [
     'coursediagnosticdata' => [
-        'mode'       => cache_store::MODE_APPLICATION,
+        'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => false,
         'simpledata' => false,
         'ttl' => 1800, // 30 minutes expiry time.

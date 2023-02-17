@@ -36,7 +36,7 @@ $url = new moodle_url('/report/coursediagnostic/index.php', ['courseid' => $cour
 $PAGE->set_url($url);
 
 if (!$course = $DB->get_record('course', ['id' => $courseid])) {
-    print_error('invalidcourseid');
+    throw new \moodle_exception('invalidcourseid');
 }
 
 require_login($course);
@@ -57,15 +57,15 @@ echo $output->header();
 echo $output->heading($pagetitle);
 
 // Get the config settings...
-$cfg_settings = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
+$cfgsettings = \report_coursediagnostic\coursediagnostic::cfg_settings_check();
 
 // If the diagnostics have been enabled...
-if ($cfg_settings) {
+if ($cfgsettings) {
 
     // Check that one or more tests have been enabled...
-    $diagnostic_settings_count = \report_coursediagnostic\coursediagnostic::get_settingscount();
+    $diagnosticsettingscount = \report_coursediagnostic\coursediagnostic::get_settingscount();
 
-    if ($diagnostic_settings_count == 0) {
+    if ($diagnosticsettingscount == 0) {
 
         $supportemail = $CFG->supportemail;
         $link = html_writer::link("mailto:{$supportemail}", get_string('system_administrator', 'report_coursediagnostic'));
@@ -76,19 +76,19 @@ if ($cfg_settings) {
             $phrase = get_string('no_tests_enabled_admin', 'report_coursediagnostic', $link);
         }
 
-        $diagnostic_content = html_writer::div($phrase, 'alert alert-info');
+        $diagnosticcontent = html_writer::div($phrase, 'alert alert-info');
     } else {
 
         // Get the tests that have been run...
         \report_coursediagnostic\coursediagnostic::init_cache();
-        $cache_data_exists = \report_coursediagnostic\coursediagnostic::cache_data_exists($courseid);
-        $cache_data = [];
-        // @todo - decide whether to run the test again if say, someone arrives at this page and the cache has expired.
-        if ($cache_data_exists[\report_coursediagnostic\coursediagnostic::CACHE_KEY . $courseid]) {
-            $cache_data = $cache_data_exists[\report_coursediagnostic\coursediagnostic::CACHE_KEY . $courseid];
+        $cachedataexists = \report_coursediagnostic\coursediagnostic::cache_data_exists($courseid);
+        $cachedata = [];
+        // ...@todo - decide whether to run the test again if say, someone arrives at this page and the cache has expired.
+        if ($cachedataexists[\report_coursediagnostic\coursediagnostic::CACHE_KEY . $courseid]) {
+            $cachedata = $cachedataexists[\report_coursediagnostic\coursediagnostic::CACHE_KEY . $courseid];
         }
 
-        if (count($cache_data) > 0) {
+        if (count($cachedata) > 0) {
 
             // Create our base table from the config settings...
             $table = new html_table();
@@ -100,11 +100,11 @@ if ($cfg_settings) {
             ];
             $table->head = $tableheadings;
             $table->data = [];
-            $automaticEnrolmentsDisabled = false;
+            $automaticenrolmentsdisabled = false;
 
             foreach ($SESSION->report_coursediagnosticconfig as $configkey => $configvalue) {
 
-                // @todo - refactor this - making use of some kind of table class
+                // ...@todo - refactor this - making use of some kind of table class
                 // cell3 is passed an initial value, whereas cell2 isn't - this
                 // is something to do with how Moodle generates table/cell data.
                 $cell1 = new html_table_cell(get_string($configkey, 'report_coursediagnostic'));
@@ -112,7 +112,9 @@ if ($cfg_settings) {
                 $cell2 = new html_table_cell();
                 $cell2->attributes['class'] = 'leftalign ' . $configkey . 'cell';
                 $cell3 = new html_table_cell($configkey);
-                $cell3->text = "<span class='badge badge-secondary'>" . get_string('skipped', 'report_coursediagnostic') . "</span>";
+                $cell3->text = "<span class='badge badge-secondary'>";
+                $cell3->text .= get_string('skipped', 'report_coursediagnostic');
+                $cell3->text .= "</span>";
                 $cell3->attributes['class'] = 'leftalign ' . $configkey . 'cell';
                 $tablecells = [];
                 $tablecells[] = $cell1;
@@ -127,13 +129,13 @@ if ($cfg_settings) {
                     // Begin by assuming each test has failed...
 
                     // A bit scrappy this - refactor to account for those tests that have 2 states.
-                    if (array_key_exists($configkey, $cache_data[0])) {
+                    if (array_key_exists($configkey, $cachedata[0])) {
                         // We now need to account for our 'result' being an array, or single value.
                         $options = null;
-                        if (is_array($cache_data[0][$configkey])) {
+                        if (is_array($cachedata[0][$configkey])) {
                             // Declare $options explicitly.
                             $options = [];
-                            foreach($cache_data[0][$configkey] as $varname => $varvalue) {
+                            foreach ($cachedata[0][$configkey] as $varname => $varvalue) {
                                 if ($varname == 'testresult') {
                                     $tmptestresult = $varvalue;
                                     continue;
@@ -151,12 +153,17 @@ if ($cfg_settings) {
                         $cell2->text = get_string($configkey . '_notset_impact', 'report_coursediagnostic');
                     }
 
-                    $cell3->text = "<span class='badge badge-danger'>" . get_string('failtext', 'report_coursediagnostic') . "</span>";
+                    $cell3->text = "<span class='badge badge-danger'>";
+                    $cell3->text .= get_string('failtext', 'report_coursediagnostic');
+                    $cell3->text .= "</span>";
 
                     // If our test has instead passed, clear and overwrite...
-                    if ((isset($cache_data[0][$configkey]) && !is_array($cache_data[0][$configkey]) && ($cache_data[0][$configkey])) || (isset($tmptestresult) && $tmptestresult)) {
+                    if ((isset($cachedata[0][$configkey]) && !is_array($cachedata[0][$configkey]) && ($cachedata[0][$configkey]))
+                        || (isset($tmptestresult) && $tmptestresult)) {
                         $cell2->text = '';
-                        $cell3->text = "<span class='badge badge-success'>" . get_string('passtext', 'report_coursediagnostic') . "</span>";
+                        $cell3->text = "<span class='badge badge-success'>";
+                        $cell3->text .= get_string('passtext', 'report_coursediagnostic');
+                        $cell3->text .= "</span>";
                     }
 
                 }
@@ -167,12 +174,14 @@ if ($cfg_settings) {
                 $table->data[] = $row;
             }
 
-            $diagnostic_content = html_writer::table($table);
+            $diagnosticcontent = html_writer::table($table);
 
         } else {
             $url = new moodle_url('/course/edit.php', ['id' => $courseid]);
             $link = html_writer::link($url, get_string('settings_link_text', 'report_coursediagnostic'));
-            $diagnostic_content = html_writer::div(get_string('no_cache_data', 'report_coursediagnostic', $link), 'alert alert-warning');
+            $diagnosticcontent = html_writer::div(
+                get_string('no_cache_data', 'report_coursediagnostic', $link), 'alert alert-warning'
+            );
         }
     }
 } else {
@@ -184,10 +193,10 @@ if ($cfg_settings) {
         $link = html_writer::link($url, get_string('admin_link_text', 'report_coursediagnostic'));
         $phrase = get_string('not_enabled_admin', 'report_coursediagnostic', $link);
     }
-    $diagnostic_content = html_writer::div($phrase, 'alert alert-info');
+    $diagnosticcontent = html_writer::div($phrase, 'alert alert-info');
 }
 
-$renderable = new \report_coursediagnostic\output\index_page($diagnostic_content);
+$renderable = new \report_coursediagnostic\output\index_page($diagnosticcontent);
 echo $output->render($renderable);
 
 echo $output->footer();

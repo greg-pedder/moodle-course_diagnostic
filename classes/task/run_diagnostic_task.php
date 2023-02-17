@@ -29,8 +29,9 @@ namespace report_coursediagnostic\task;
 
 defined('MOODLE_INTERNAL') || die;
 
-class run_diagnostic_task extends \core\task\scheduled_task
-{
+class run_diagnostic_task extends \core\task\scheduled_task {
+
+    const CACHE_KEY = 'courseid:';
 
     /**
      * Return the task's name as shown in admin screens.
@@ -66,12 +67,14 @@ class run_diagnostic_task extends \core\task\scheduled_task
         // Grab some things for later...
         $timelimit = $diagnosticconfig->timelimit;
         $startcourseindex = ((isset($diagnosticconfig->startcourseindex)) ? $diagnosticconfig->startcourseindex : 0);
+        $endcourseindex = ((isset($diagnosticconfig->endcourseindex)) ? $diagnosticconfig->endcourseindex : 4999);
 
         // Remove some things we don't need...
         unset($diagnosticconfig->enablediagnostic);
         unset($diagnosticconfig->version);
         unset($diagnosticconfig->filesizelimit);
         unset($diagnosticconfig->startcourseindex);
+        unset($diagnosticconfig->endcourseindex);
         unset($diagnosticconfig->timelimit);
 
         // Check that there are tests to perform...
@@ -79,7 +82,7 @@ class run_diagnostic_task extends \core\task\scheduled_task
         foreach ($diagnosticconfig as $k => $v) {
             if ($v) {
                 $counter++;
-                // Not sure there's much point proceeding here, as we know we
+                // Not sure there's much point continuing here, as we know we
                 // have at least 1 test to perform.
                 break;
             }
@@ -92,9 +95,15 @@ class run_diagnostic_task extends \core\task\scheduled_task
 
         // Prepare the list of tests we need to perform...
         $testsuite = [];
-        foreach($diagnosticconfig as $setting => $value) {
-            if ($setting == 'enddate' && !empty($value)) $testsuite[] = 'enddate_notset';
-            if (!empty($value)) $testsuite[] = $setting;
+        foreach ($diagnosticconfig as $setting => $value) {
+
+            if ($setting == 'enddate' && !empty($value)) {
+                $testsuite[] = 'enddate_notset';
+            }
+
+            if (!empty($value)) {
+                $testsuite[] = $setting;
+            }
         }
 
         // Get the last course we processed.
@@ -102,17 +111,25 @@ class run_diagnostic_task extends \core\task\scheduled_task
             $startcourseindex = 0;
         }
 
+        // As this is a bulk operation, start with a conservative estimate.
+        if (empty($endcourseindex)) {
+            $endcourseindex = 4999;
+        }
+
         $trace->output( "report_coursediagnostic: starting at course index $startcourseindex" );
 
         // Get the basics of all visible courses. So we're not glomming the
         // whole of the course table, limit this to 5k records at a time.
-        $courses = $DB->get_records( 'course', array('visible' => 1), '', 'id', $startcourseindex, 5000);
+        $courses = $DB->get_records( 'course', ['visible' => 1], '', 'id', $startcourseindex, $endcourseindex);
 
         // Convert courses to simple array.
-        $courses = array_values( $courses );
+        $courses = array_values($courses);
         $highestindex = count($courses) - 1;
         $trace->output( "report_coursediagnostic: highest course index is $highestindex" );
         $trace->output( "report_coursediagnostic: configured time limit is {$timelimit} seconds" );
+
+        // Get the cache instance before iterating through the courses...
+        \report_coursediagnostic\coursediagnostic::init_cache();
 
         // Process from current index...
         for ($i = $startcourseindex; $i <= $highestindex; $i++) {
@@ -122,8 +139,14 @@ class run_diagnostic_task extends \core\task\scheduled_task
             if ($course->id > 1) {
                 $updatestart = microtime(true);
                 $trace->output( "report_coursediagnostic: running tests for course '{$course->shortname}'" );
-                $diagnostic_data = \report_coursediagnostic\coursediagnostic::run_tests($testsuite, $course->id);
-                \report_coursediagnostic\coursediagnostic::prepare_cache($diagnostic_data, $course->id);
+
+                // Has the diagnostic data for this course been cached already?
+                $cachedata = \report_coursediagnostic\coursediagnostic::cache_data_exists($course->id);
+                if ($cachedata[self::CACHE_KEY . $course->id]) {
+                    continue;
+                }
+                $diagnosticdata = \report_coursediagnostic\coursediagnostic::run_tests($testsuite, $course->id);
+                \report_coursediagnostic\coursediagnostic::prepare_cache($diagnosticdata, $course->id);
                 $updateend = microtime(true);
                 $updatetime = number_format($updateend - $updatestart, 4);
                 $trace->output( "report_coursediagnostic: --- course {$course->shortname} took $updatetime seconds to process.");
@@ -144,6 +167,7 @@ class run_diagnostic_task extends \core\task\scheduled_task
             $nextcoursetoprocess = $lastcourseprocessed + 1;
         }
         set_config( 'startcourseindex', $nextcoursetoprocess, 'report_coursediagnostic' );
+        set_config( 'endcourseindex', $endcourseindex, 'report_coursediagnostic' );
         $trace->output( "report_coursediagnostic: next course index to process is $nextcoursetoprocess" );
     }
 }

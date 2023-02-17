@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Brief Description
+ * Are the uploaded audio files making this course excessively large?
  *
- * More indepth description.
+ * This tests whether the given course has audio files that could be
+ * impacting Moodle's performance.
  *
- * @package
+ * @package    report_coursediagnositc
  * @copyright  2023 Greg Pedder <greg.pedder@glasgow.ac.uk>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,8 +28,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_courseaudio_test implements course_diagnostic_interface
-{
+class course_courseaudio_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report. */
     public string $testname;
@@ -99,22 +99,23 @@ class course_courseaudio_test implements course_diagnostic_interface
     /**
      * @return bool
      */
-    public function runTest()
-    {
+    public function runtest() {
         global $DB, $CFG;
         require_once("$CFG->dirroot/report/coursediagnostic/lib.php");
 
         $filesizeoption = get_config('report_coursediagnostic', 'filesizelimit');
         $filesizelimit = self::$filesizeoptions[$filesizeoption];
         $context = \context_course::instance($this->course->id);
-        $result = $DB->get_records_sql('SELECT COUNT(*) AS ttl, SUM(filesize) AS filesize FROM {files} mf JOIN {context} mc ON mc.id = mf.contextid WHERE mc.path LIKE "'.$context->path.'/%" AND mf.filename <> "." AND mimetype IN ('.implode(', ', self::$mimetypes).')');
+        $result = $DB->get_records_sql('SELECT COUNT(*) AS ttl, SUM(filesize) AS filesize FROM {files} mf
+                                        JOIN {context} mc ON mc.id = mf.contextid WHERE mc.path LIKE "'.$context->path.'/%"
+                                        AND mf.filename <> "." AND mimetype IN ('.implode(', ', self::$mimetypes).')');
 
-        $fileSizeWithinLimit = true;
+        $filesizewithinlimit = true;
         if (count($result) > 0) {
             foreach ($result as $row) {
                 if ($row->filesize > 0) {
                     if ($row->filesize >= $filesizelimit) {
-                        $fileSizeWithinLimit = false;
+                        $filesizewithinlimit = false;
                         self::$totalfiles = $row->ttl;
                         self::$totalfilesize = $row->filesize;
                         break;
@@ -124,10 +125,10 @@ class course_courseaudio_test implements course_diagnostic_interface
         }
 
         $this->testresult = [
-            'testresult' => $fileSizeWithinLimit,
+            'testresult' => $filesizewithinlimit,
             'totalfiles' => self::$totalfiles,
-            'totalfilesize' => formatSize(self::$totalfilesize),
-            'filesizelimit' => formatSize($filesizelimit)
+            'totalfilesize' => formatsize(self::$totalfilesize),
+            'filesizelimit' => formatsize($filesizelimit)
         ];
 
         return $this->testresult;

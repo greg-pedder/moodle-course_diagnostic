@@ -38,26 +38,33 @@ require_once($CFG->dirroot.'/report/coursediagnostic/classes/diagnostic_factory.
 function report_coursediagnostic_extend_navigation_course($navigation, $course, $context) {
     if (has_capability('report/coursediagnostic:view', $context)) {
         $url = new moodle_url('/report/coursediagnostic/index.php', ['courseid' => $course->id]);
-        $navigation->add(get_string('pluginname', 'report_coursediagnostic'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
+        $navigation->add(
+            get_string('pluginname', 'report_coursediagnostic'),
+            $url,
+            navigation_node::TYPE_SETTING,
+            null,
+            null,
+            new pix_icon('i/report', '')
+        );
     }
 }
 
 /**
  * Utility method to return bytes converted to KB/MB/GB etc.
  *
- * @param $a_bytes
+ * @param $abytes
  * @return string|void
  */
-function formatSize($a_bytes) {
-    if ($a_bytes < 1024) {
-        return $a_bytes .' B';
-    } elseif ($a_bytes < 1048576) {
-        return round($a_bytes / 1024, 1) .' KB';
-    } elseif ($a_bytes < 1073741824) {
-        return round($a_bytes / 1048576, 1) . ' MB';
-    } elseif ($a_bytes < 1099511627776) {
-        return round($a_bytes / 1073741824, 1) . ' GB';
-    } elseif ($a_bytes < 1125899906842624) {
-        return round($a_bytes / 1099511627776, 1) .' TB';
+function formatsize($abytes) {
+    if ($abytes < 1024) {
+        return $abytes .' B';
+    } else if ($abytes < 1048576) {
+        return round($abytes / 1024, 1) .' KB';
+    } else if ($abytes < 1073741824) {
+        return round($abytes / 1048576, 1) . ' MB';
+    } else if ($abytes < 1099511627776) {
+        return round($abytes / 1073741824, 1) . ' GB';
+    } else if ($abytes < 1125899906842624) {
+        return round($abytes / 1099511627776, 1) .' TB';
     }
 }

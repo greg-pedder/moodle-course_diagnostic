@@ -27,8 +27,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_visibility_test implements course_diagnostic_interface {
-
+class course_visibility_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,8 +50,7 @@ class course_visibility_test implements course_diagnostic_interface {
     /**
      * @return bool
      */
-    public function runTest(): bool
-    {
+    public function runtest(): bool {
         $this->testresult = (bool) $this->course->visible;
         return $this->testresult;
     }

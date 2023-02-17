@@ -28,8 +28,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_groupmode_test implements course_diagnostic_interface
-{
+class course_groupmode_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -51,25 +50,26 @@ class course_groupmode_test implements course_diagnostic_interface
     /**
      * @return bool
      */
-    public function runTest()
-    {
+    public function runtest() {
         $definedandpopulated = true;
         if ($this->course->groupmode != NOGROUPS) {
             $groups = groups_get_all_groups($this->course->id);
             if (!empty($groups)) {
-                // check if the group has at least 1 member...
+                // Check if the group has at least 1 member...
                 $hasmembers = 0;
-                foreach($groups as $group) {
+                foreach ($groups as $group) {
                     $groupmembercount = groups_get_members($group->id);
                     if (count($groupmembercount) > 0) {
-                        // we don't need to go any further...
+                        // We don't need to go any further...
                         $hasmembers++;
                         break;
                     }
                 }
 
                 // Looks like the groups have no members...
-                if ($hasmembers == 0) $definedandpopulated = false;
+                if ($hasmembers == 0) {
+                    $definedandpopulated = false;
+                }
 
             } else {
                 // Looks like the groups have no members...

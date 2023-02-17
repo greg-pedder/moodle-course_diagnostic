@@ -28,8 +28,7 @@
 namespace report_coursediagnostic;
 
 defined('MOODLE_INTERNAL') || die;
-class course_activitycompletion_test implements \report_coursediagnostic\course_diagnostic_interface
-{
+class course_activitycompletion_test implements \report_coursediagnostic\course_diagnostic_interface {
 
     /** @var string The name of the test - needed w/in the report */
     public string $testname;
@@ -52,51 +51,58 @@ class course_activitycompletion_test implements \report_coursediagnostic\course_
     /**
      * @return array
      */
-    public function runTest(): array
-    {
-
-        global $SESSION;
-        $courseCompletion = $this->course->enablecompletion;
-        $activityCompletion = true;
+    public function runtest(): array {
+        $coursecompletion = $this->course->enablecompletion;
+        $activitycompletion = true;
         $counter = 0;
         $activitylinks = [];
         $settingslink = '';
 
         // If completion is currently not set in the course...
-        if ($courseCompletion == 0) {
+        if ($coursecompletion == 0) {
             // Get all activities associated with the course...
-            $moduleInfo = get_fast_modinfo($this->course->id);
-            $modules = $moduleInfo->get_used_module_names();
+            $moduleinfo = get_fast_modinfo($this->course->id);
+            $modules = $moduleinfo->get_used_module_names();
             $settingsurl = new \moodle_url('/course/edit.php', ['id' => $this->course->id]);
             $settingslink = \html_writer::link($settingsurl, get_string('settings_link_text', 'report_coursediagnostic'));
             foreach ($modules as $module) {
-                $cmInfo = $moduleInfo->get_instances_of($module->get_component());
-                foreach ($cmInfo as $moduleData) {
-                    if ($moduleData->completion > 0) {
+                $cminfo = $moduleinfo->get_instances_of($module->get_component());
+                foreach ($cminfo as $moduledata) {
+                    if ($moduledata->completion > 0) {
                         $counter++;
-                        if ($moduleData->get_url() != null) {
-                            $url = new \moodle_url('/course/modedit.php', ['update' => $moduleData->url->param('id'), 'return' => 1]);
+                        if ($moduledata->get_url() != null) {
+                            $url = new \moodle_url('/course/modedit.php',
+                                ['update' => $moduledata->url->param('id'), 'return' => 1]
+                            );
                         } else {
                             // So, mod type 'label' doesn't contain an easy way
                             // to get the url to the edit page...
-                            $url = new \moodle_url('/course/mod.php', ['sesskey' => sesskey(), 'sr' => $moduleData->sectionnum, 'update' => $moduleData->id]);
+                            $url = new \moodle_url('/course/mod.php',
+                                [
+                                    'sesskey' => sesskey(),
+                                    'sr' => $moduledata->sectionnum,
+                                    'update' => $moduledata->id
+                                ]
+                            );
                         }
-                        $link = \html_writer::link($url, $moduleData->get_name());
+                        $link = \html_writer::link($url, $moduledata->get_name());
                         $activitylinks[] = $link;
                         // The 'Completion tracking' dropdown in the activity
-                        // settings is something other than 'Show activity...'
-                        $activityCompletion = false;
+                        // settings is something other than 'Show activity...'.
+                        $activitycompletion = false;
                     }
                 }
             }
         }
 
         $this->testresult = [
-            'testresult' => $activityCompletion,
+            'testresult' => $activitycompletion,
             'activitylinks' => $activitylinks,
             'settingslink' => $settingslink,
-            'word1' => (($counter > 1) ? get_string('plural_3', 'report_coursediagnostic') : get_string('singular_3', 'report_coursediagnostic')),
-            'word2' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') : get_string('singular_2', 'report_coursediagnostic'))
+            'word1' => (($counter > 1) ? get_string('plural_3', 'report_coursediagnostic') :
+                get_string('singular_3', 'report_coursediagnostic')),
+            'word2' => (($counter > 1) ? get_string('plural_2', 'report_coursediagnostic') :
+                get_string('singular_2', 'report_coursediagnostic'))
         ];
 
         return $this->testresult;
