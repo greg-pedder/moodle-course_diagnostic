@@ -67,7 +67,8 @@ class run_diagnostic_task extends \core\task\scheduled_task {
         // Grab some things for later...
         $timelimit = $diagnosticconfig->timelimit;
         $startcourseindex = ((isset($diagnosticconfig->startcourseindex)) ? $diagnosticconfig->startcourseindex : 0);
-        $endcourseindex = ((isset($diagnosticconfig->endcourseindex)) ? $diagnosticconfig->endcourseindex : 4999);
+        // As this is a bulk operation, start with a conservative estimate. UofG has c20k live courses.
+        $endcourseindex = ((isset($diagnosticconfig->endcourseindex)) ? $diagnosticconfig->endcourseindex : 3000);
 
         // Remove some things we don't need...
         unset($diagnosticconfig->enablediagnostic);
@@ -104,16 +105,6 @@ class run_diagnostic_task extends \core\task\scheduled_task {
             if (!empty($value)) {
                 $testsuite[] = $setting;
             }
-        }
-
-        // Get the last course we processed.
-        if (empty($startcourseindex)) {
-            $startcourseindex = 0;
-        }
-
-        // As this is a bulk operation, start with a conservative estimate.
-        if (empty($endcourseindex)) {
-            $endcourseindex = 4999;
         }
 
         $trace->output( "report_coursediagnostic: starting at course index $startcourseindex" );
