@@ -112,9 +112,10 @@ if ($cfgsettings) {
                 $cell2 = new html_table_cell();
                 $cell2->attributes['class'] = 'leftalign ' . $configkey . 'cell';
                 $cell3 = new html_table_cell($configkey);
-                $cell3->text = "<span class='badge badge-secondary'>";
-                $cell3->text .= get_string('skipped', 'report_coursediagnostic');
-                $cell3->text .= "</span>";
+                $cell3->style = 'border-left:1px solid #ced4da;';
+                $cell3->style = 'border-right:1px solid #ced4da;';
+                $cell3->style = 'border-bottom:1px solid #ced4da;';
+                $cell3->text = get_string('skipped', 'report_coursediagnostic');
                 $cell3->attributes['class'] = 'leftalign ' . $configkey . 'cell';
                 $tablecells = [];
                 $tablecells[] = $cell1;
@@ -150,20 +151,20 @@ if ($cfgsettings) {
 
                         $cell2->text = get_string($configkey . '_impact', 'report_coursediagnostic', $options);
                     } else {
-                        $cell2->text = get_string($configkey . '_notset_impact', 'report_coursediagnostic');
+                        $settingsurl = new \moodle_url('/course/edit.php', ['id' => $courseid]);
+                        $settingslink = \html_writer::link($settingsurl, get_string('settings_link_text', 'report_coursediagnostic'));
+                        $cell2->text = get_string($configkey . '_notset_impact', 'report_coursediagnostic', ['settingslink' => $settingslink]);
                     }
 
-                    $cell3->text = "<span class='badge badge-danger'>";
-                    $cell3->text .= get_string('failtext', 'report_coursediagnostic');
-                    $cell3->text .= "</span>";
+                    $cell3->text = '<strong>' . get_string('failtext', 'report_coursediagnostic') . '</strong>';
+                    $cell3->attributes['class'] = 'alert-danger';
 
                     // If our test has instead passed, clear and overwrite...
                     if ((isset($cachedata[0][$configkey]) && !is_array($cachedata[0][$configkey]) && ($cachedata[0][$configkey]))
                         || (isset($tmptestresult) && $tmptestresult)) {
                         $cell2->text = '';
-                        $cell3->text = "<span class='badge badge-success'>";
-                        $cell3->text .= get_string('passtext', 'report_coursediagnostic');
-                        $cell3->text .= "</span>";
+                        $cell3->text = '<strong>' . get_string('passtext', 'report_coursediagnostic') . '</strong>';
+                        $cell3->attributes['class'] = 'alert-success';
                     }
 
                 }
