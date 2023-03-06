@@ -48,7 +48,7 @@ class course_enddate_test implements \report_coursediagnostic\course_diagnostic_
     }
 
     /**
-     * @return bool
+     * @return array
      */
     public function runtest(): array {
 
