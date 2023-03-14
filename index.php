@@ -92,6 +92,10 @@ if ($cfgsettings) {
             // Create our base table from the config settings...
             $table = new html_table();
             $table->id = 'course-diagnostic-report';
+            $table->caption = get_string('tablecaption', 'report_coursediagnostic');
+            $table->captionhide = true;
+            $table->attributes['role'] = 'presentation';
+            $table->attributes['aria-describedby'] = 'report_desc';
             $tableheadings = [
                 get_string('column1', 'report_coursediagnostic'),
                 get_string('column2', 'report_coursediagnostic'),
@@ -201,7 +205,7 @@ if ($cfgsettings) {
                 $table->data[] = $row;
             }
 
-            $reportinfo = html_writer::div(get_string('report_summary', 'report_coursediagnostic'));
+            $reportinfo = html_writer::div(get_string('report_summary', 'report_coursediagnostic'),'',['id' => 'report_desc']);
             $tabledata = html_writer::table($table);
             $diagnosticcontent = $reportinfo . $tabledata;
 
